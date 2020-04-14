@@ -1,0 +1,70 @@
+---USPS EXAMPLE RETURN----
+
+carrier_code_test = "usps"
+tracking_number_test = "9405511899223197428490"
+
+{'tracking_number': '9405511899223197428490', 'status_code': 'DE', 'status_description': 'Delivered', 'carrier_status_code': '01', 'carrier_status_description': 'Your item was delivered at the front door or porch at 5:32 pm on April 6, 2020 in MONTGOMERY, AL 36116.', 'ship_date': '2020-04-04T05:02:00Z', 'estimated_delivery_date': None, 'actual_delivery_date': '2020-04-07T00:32:00Z', 'exception_description': None, 
+
+'events': [
+
+{'occurred_at': '2020-04-06T22:32:00Z', 'carrier_occurred_at': '2020-04-06T17:32:00', 'description': 'Delivered, Front Door/Porch', 'city_locality': 'MONTGOMERY', 'state_province': 'AL', 'postal_code': '36116', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': '01', 'latitude': 32.2851, 'longitude': -86.3029}, 
+
+{'occurred_at': '2020-04-06T12:10:00Z', 'carrier_occurred_at': '2020-04-06T07:10:00', 'description': 'Out for Delivery', 'city_locality': 'MONTGOMERY', 'state_province': 'AL', 'postal_code': '36116', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': 'OF', 'latitude': 32.2851, 'longitude': -86.3029}, 
+
+{'occurred_at': '2020-04-06T09:38:00Z', 'carrier_occurred_at': '2020-04-06T04:38:00', 'description': 'Arrived at Post Office', 'city_locality': 'MONTGOMERY', 'state_province': 'AL', 'postal_code': '36116', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': '07', 'latitude': 32.2851, 'longitude': -86.3029}, 
+
+{'occurred_at': '2020-04-06T08:52:00Z', 'carrier_occurred_at': '2020-04-06T03:52:00', 'description': 'Arrived at USPS Facility', 'city_locality': 'MONTGOMERY', 'state_province': 'AL', 'postal_code': '36116', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': 'A1', 'latitude': 32.2851, 'longitude': -86.3029}, 
+
+{'occurred_at': '2020-04-06T08:36:00Z', 'carrier_occurred_at': '2020-04-06T03:36:00', 'description': 'Departed USPS Regional Facility', 'city_locality': 'MONTGOMERY AL DISTRIBUTION CENTER', 'state_province': '', 'postal_code': '', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': 'T1', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-04-05T08:43:00Z', 'carrier_occurred_at': '2020-04-05T03:43:00', 'description': 'Arrived at USPS Regional Destination Facility', 'city_locality': 'MONTGOMERY AL DISTRIBUTION CENTER', 'state_province': '', 'postal_code': '', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': '10', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-04-04T00:00:00Z', 'carrier_occurred_at': '2020-04-04T00:00:00', 'description': 'In Transit to Next Facility', 'city_locality': '', 'state_province': '', 'postal_code': '', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': 'NT', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-04-03T23:17:00Z', 'carrier_occurred_at': '2020-04-03T23:17:00', 'description': 'Arrived at USPS Regional Origin Facility', 'city_locality': 'PHILADELPHIA PA NETWORK DISTRIBUTION CENTER', 'state_province': '', 'postal_code': '', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': '10', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-04-04T02:02:00Z', 'carrier_occurred_at': '2020-04-03T22:02:00', 'description': 'Accepted at USPS Origin Facility', 'city_locality': 'MOUNT LAUREL', 'state_province': 'NJ', 'postal_code': '08054', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': 'OA', 'latitude': 39.9501, 'longitude': -74.9078}, 
+
+{'occurred_at': '2020-04-03T18:58:00Z', 'carrier_occurred_at': '2020-04-03T14:58:00', 'description': 'Shipping Label Created, USPS Awaiting Item', 'city_locality': 'MOUNT LAUREL', 'state_province': 'NJ', 'postal_code': '08054', 'country_code': '', 'company_name': '', 'signer': '', 'event_code': 'GX', 'latitude': 39.9501, 'longitude': -74.9078}
+
+]}
+
+
+----FEDEX EXAMPLE RETURN----
+
+carrier_code = "fedex"
+tracking_number = "120667023892"
+{'tracking_number': '120667023892', 'status_code': 'DE', 'status_description': 'Delivered', 'carrier_status_code': 'DL', 'carrier_status_description': 'Delivered', 'ship_date': '2020-03-30T03:41:00Z', 'estimated_delivery_date': None, 'actual_delivery_date': '2020-03-31T15:20:00Z', 'exception_description': None, 
+
+'events': [
+
+{'occurred_at': '2020-03-31T13:20:00Z', 'carrier_occurred_at': '2020-03-31T08:20:00-07:00', 'description': 'Delivered', 'city_locality': 'AUSTIN', 'state_province': 'TX', 'postal_code': '78728', 'country_code': 'US', 'company_name': None, 'signer': 'B.BARBER', 'event_code': 'DL', 'latitude': 30.1356, 'longitude': -97.6761}, 
+{'occurred_at': '2020-03-31T11:11:00Z', 'carrier_occurred_at': '2020-03-31T06:11:00-07:00', 'description': 'On FedEx vehicle for delivery', 'city_locality': 'AUSTIN', 'state_province': 'TX', 'postal_code': '78728', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'OD', 'latitude': 30.1356, 'longitude': -97.6761}, 
+
+{'occurred_at': '2020-03-31T11:04:00Z', 'carrier_occurred_at': '2020-03-31T06:04:00-07:00', 'description': 'At local FedEx facility', 'city_locality': 'AUSTIN', 'state_province': 'TX', 'postal_code': '78728', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'AR', 'latitude': 30.1356, 'longitude': -97.6761}, 
+{'occurred_at': '2020-03-31T08:52:00Z', 'carrier_occurred_at': '2020-03-31T03:52:00-07:00', 'description': 'At destination sort facility', 'city_locality': 'AUSTIN', 'state_province': 'TX', 'postal_code': '78719', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'AR', 'latitude': 30.1356, 'longitude': -97.6761}, 
+
+{'occurred_at': '2020-03-31T07:21:00Z', 'carrier_occurred_at': '2020-03-31T02:21:00-07:00', 'description': 'Departed FedEx location', 'city_locality': 'MEMPHIS', 'state_province': 'TN', 'postal_code': '38118', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'DP', 'latitude': 35.0048, 'longitude': -89.937}, 
+
+{'occurred_at': '2020-03-31T05:03:00Z', 'carrier_occurred_at': '2020-03-31T00:03:00-07:00', 'description': 'International shipment release - Import', 'city_locality': 'MEMPHIS', 'state_province': 'TN', 'postal_code': '38194', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'CC', 'latitude': 35.0048, 'longitude': -89.937}, 
+
+{'occurred_at': '2020-03-31T02:38:00Z', 'carrier_occurred_at': '2020-03-30T21:38:00-07:00', 'description': 'Arrived at FedEx location', 'city_locality': 'MEMPHIS', 'state_province': 'TN', 'postal_code': '38118', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'AR', 'latitude': 35.0048, 'longitude': -89.937}, 
+
+{'occurred_at': '2020-03-30T11:39:00Z', 'carrier_occurred_at': '2020-03-30T11:39:00-07:00', 'description': 'In transit', 'city_locality': 'SOMMA LOMBARDO', 'state_province': None, 'postal_code': '21019', 'country_code': 'IT', 'company_name': None, 'signer': None, 'event_code': 'IT', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-03-30T10:59:00Z', 'carrier_occurred_at': '2020-03-30T10:59:00-07:00', 'description': 'In transit', 'city_locality': 'SOMMA LOMBARDO', 'state_province': None, 'postal_code': '21019', 'country_code': 'IT', 'company_name': None, 'signer': None, 'event_code': 'IT', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-03-30T09:59:00Z', 'carrier_occurred_at': '2020-03-30T09:59:00-07:00', 'description': 'In transit', 'city_locality': 'SOMMA LOMBARDO', 'state_province': None, 'postal_code': '21019', 'country_code': 'IT', 'company_name': None, 'signer': None, 'event_code': 'IT', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-03-30T02:57:00Z', 'carrier_occurred_at': '2020-03-30T02:57:00-07:00', 'description': 'In transit', 'city_locality': 'DUBAI CITY', 'state_province': 'DU', 'postal_code': '20001', 'country_code': 'AE', 'company_name': None, 'signer': None, 'event_code': 'IT', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-03-30T02:13:00Z', 'carrier_occurred_at': '2020-03-30T02:13:00-07:00', 'description': 'In transit', 'city_locality': 'DUBAI', 'state_province': 'DU', 'postal_code': '20000', 'country_code': 'AE', 'company_name': None, 'signer': None, 'event_code': 'IT', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-03-30T02:04:00Z', 'carrier_occurred_at': '2020-03-30T02:04:00-07:00', 'description': 'In transit', 'city_locality': 'DUBAI', 'state_province': 'DU', 'postal_code': '20000', 'country_code': 'AE', 'company_name': None, 'signer': None, 'event_code': 'IT', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-03-29T20:45:00Z', 'carrier_occurred_at': '2020-03-29T20:45:00-07:00', 'description': 'Left FedEx origin facility', 'city_locality': 'DUBAI CITY', 'state_province': 'DU', 'postal_code': '20000', 'country_code': 'AE', 'company_name': None, 'signer': None, 'event_code': 'DP', 'latitude': None, 'longitude': None}, 
+{'occurred_at': '2020-03-29T20:41:00Z', 'carrier_occurred_at': '2020-03-29T20:41:00-07:00', 'description': 'Picked up', 'city_locality': 'DUBAI CITY', 'state_province': 'DU', 'postal_code': '20000', 'country_code': 'AE', 'company_name': None, 'signer': None, 'event_code': 'PU', 'latitude': None, 'longitude': None}, 
+
+{'occurred_at': '2020-03-25T21:58:03Z', 'carrier_occurred_at': '2020-03-25T21:58:03-07:00', 'description': 'Shipment information sent to FedEx', 'city_locality': None, 'state_province': None, 'postal_code': None, 'country_code': None, 'company_name': None, 'signer': None, 'event_code': 'OC', 'latitude': None, 'longitude': None}
+
+]}
