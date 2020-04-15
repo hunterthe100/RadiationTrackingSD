@@ -17,7 +17,7 @@ def main():
 
     carrier_code = "fedex"
     tracking_number = "120667023892"
-    response = a.get_tracking_data(carrier_code,tracking_number)
+    response = a.get_tracking_data(carrier_code, tracking_number)
 
     print(response)
 

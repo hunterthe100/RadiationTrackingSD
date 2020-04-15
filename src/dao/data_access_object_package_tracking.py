@@ -9,7 +9,7 @@ class DataAccessObjectPackageTracking:
 
     def get_tracking_data(self, carrier_code, tracking_number):
         self.log.debug("Accessing ShipEngine API")
-        self.log.debug(F"Carrier code:{carrier_code} and Tracking number:{tracking_number}")
+        self.log.debug(F"Carrier code: {carrier_code} and Tracking number: {tracking_number}")
 
         full_address = "https://api.shipengine.com"
         path = "/v1/tracking"
