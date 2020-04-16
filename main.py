@@ -1,9 +1,5 @@
-#from src.dao.data_access_object_sqlite import DataAccessObjectSQLite
-from src.dao.data_access_object_package_tracking import DataAccessObjectPackageTracking
+from src.dao.data_access_object_sqlite import DataAccessObjectSQLite
 import logging
-
-from src.model.package_tracking.event import Event
-from src.model.package_tracking.tracking_data import TrackingData
 
 
 def config_logging():
@@ -11,22 +7,15 @@ def config_logging():
 
 
 def main():
-    # Configure Logging
-    config_logging()
-
-    # Setup Data Access Object
-    # d = DataAccessObjectSQLite()
-    package_tracking_dao = DataAccessObjectPackageTracking()
-
-    carrier_code = "fedex"
-    tracking_number = "120667023892"
-    tracking_data: TrackingData = package_tracking_dao.get_tracking_data(carrier_code, tracking_number)
-
-    if tracking_data.is_delivered:
-        event: Event
-        for event in tracking_data.events:
-            print(event.coordinates)
+    dao = DataAccessObjectSQLite()
+    packages = dao.get_all_packages()
+    parts = dao.get_all_parts()
+    gps = dao.get_all_gps_locations()
+    print(packages)
+    print(parts)
+    print(gps)
 
 
 if __name__ == '__main__':
+    config_logging()
     main()

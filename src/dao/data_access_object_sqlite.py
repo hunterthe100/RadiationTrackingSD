@@ -1,63 +1,102 @@
 import logging
 import sqlite3
-from typing import List
+from typing import List, Tuple
 
+import app_config
 from src.model.gps_location import GPSLocation
 from src.model.package import Package
 from src.model.part import Part
 
+PACKAGE_TABLE_NAME = "Packages"
+PACKAGE_TABLE_COLUMNS = "PackageID, PackageCarrier, Delivered, PackageRadiation"
+PACKAGE_TABLE_ID_FIELD = "PackageID"
+
+GPS_TABLE_NAME = "GPSLocations"
+GPS_TABLE_COLUMNS = "GPSCoordID, PackageID, Latitude, Longitude, TimeStamp"
+GPS_TABLE_ID_FIELD = "GPSCoordID"
+
+PART_TABLE_NAME = "Parts"
+PART_TABLE_COLUMNS = "PartID, PartName, PackageID, PartRadiation"
+PART_TABLE_ID_FIELD = "PartID"
+
 SELECT_BY_ID = "SELECT {table_columns} FROM {table_name} WHERE {id_name} = ?"
 SELECT_ALL = "SELECT {table_columns} FROM {table_name}"
-SELECT_GPS_BY_ID = SELECT_BY_ID.format(table_columns="GPSCoordID, PackageID, GPSCoord, TimeStamp",
-                                       table_name="GPSLocations",
-                                       id_name="GPSCoordID")
-SELECT_ALL_GPS = SELECT_BY_ID.format(table_columns="GPSCoordID, PackageID, GPSCoord, TimeStamp",
-                                     table_name="GPSLocations")
+INSERT = "INSERT INTO {table_name} ({table_columns}) VALUES ({values})"
+DELETE = "DELETE FROM {table_name} WHERE {id_name} = ?"
 
 
 class DataAccessObjectSQLite:
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
-        self._connection = sqlite3.connect("package.sqlite")
+        self._connection = sqlite3.connect(app_config.DATABASE_PATH)
+
+    def _get(self, object_class, table_name: str, table_columns: str, id_name: str, obj_id):
+        self.log.debug(f"Getting {object_class} with ID: {obj_id}")
+        with CursorContext(self._connection) as cursor:
+            sql_cmd = SELECT_BY_ID.format(table_name=table_name,
+                                          table_columns=table_columns,
+                                          id_name=id_name)
+            cursor.execute(sql_cmd, obj_id)
+            raw = cursor.fetchone()
+        return object_class(*raw)
+
+    def _get_all(self, object_class, table_name: str, table_columns: str):
+        self.log.debug(f"Getting all {object_class}")
+        with CursorContext(self._connection) as cursor:
+            sql_cmd = SELECT_ALL.format(table_name=table_name,
+                                        table_columns=table_columns)
+            cursor.execute(sql_cmd)
+            return [object_class(*raw) for raw in cursor.fetchall()]
+
+    def _save(self, table_name: str, table_columns: str, values: Tuple):
+        sql_cmd = INSERT.format(table_name=table_name,
+                                table_columns=table_columns,
+                                values=", ".join(["?"]*len(values)))
+        with CursorContext(self._connection) as cursor:
+            try:
+                cursor.execute(sql_cmd, values)
+            except sqlite3.OperationalError as e:
+                self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
+                raise
 
     def save_package(self, package: Package):
-        pass
+        self.log.debug(f"Inserting Package with ID: {package.package_id}")
+        values = (package.package_id, package.package_carrier, package.delivered, package.package_radiation)
+        self._save(PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS, values)
 
     def save_part(self, part: Part):
-        pass
+        self.log.debug(f"Inserting Part with ID: {part.part_id}")
+        values = (part.part_id, part.part_name, part.package_id, part.part_radiation)
+        self._save(PART_TABLE_NAME, PART_TABLE_COLUMNS, values)
 
     def save_gps_location(self, gps_location: GPSLocation):
-        pass
+        self.log.debug(f"Inserting GPSLocation with ID: {gps_location.gps_coord_id}")
+        values = (gps_location.gps_coord_id, gps_location.package_id, gps_location.latitude, gps_location.longitude,
+                  gps_location.time_stamp)
+        self._save(GPS_TABLE_NAME, GPS_TABLE_COLUMNS, values)
 
-    def load_package(self, package_id: str) -> Package:
-        pass
+    def get_package(self, package_id: str) -> Package:
+        return self._get(Package, PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS, PACKAGE_TABLE_ID_FIELD, package_id)
 
-    def load_part(self, part_id: str) -> Part:
-        pass
+    def get_all_packages(self) -> List[Package]:
+        return self._get_all(Package, PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS)
 
-    def load_all_gps_locations(self) -> List[GPSLocation]:
-        self.log.debug("Loading ALL GPSLocations")
-        with CursorContext(self._connection) as cursor:
-            cursor.execute(SELECT_ALL_GPS)
-            self.log.debug("Constructing GPSLocations collection")
-            return [GPSLocation(raw) for raw in cursor.fetchall()]
+    def get_part(self, part_id: str) -> Part:
+        return self._get(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS, PART_TABLE_ID_FIELD, part_id)
 
-    def load_gps_location(self, gps_location_id: str) -> GPSLocation:
-        self.log.debug(f"Loading GPSLocation with ID: {gps_location_id}")
-        with CursorContext(self._connection) as cursor:
-            cursor.execute(SELECT_GPS_BY_ID, [gps_location_id])
-            raw = cursor.fetchone()
-        return GPSLocation(raw)
+    def get_all_parts(self) -> List[Part]:
+        return self._get_all(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS)
 
-    def find_gps_locations_by_package_id(self, package_id: str) -> List[GPSLocation]:
-        pass
+    def get_gps_location(self, gps_location_id: str) -> GPSLocation:
+        return self._get(GPSLocation, GPS_TABLE_NAME, GPS_TABLE_COLUMNS, GPS_TABLE_ID_FIELD, gps_location_id)
 
-    def find_parts_by_package_id(self, package_id) -> List[Part]:
-        pass
+    def get_all_gps_locations(self) -> List[GPSLocation]:
+        return self._get_all(GPSLocation, GPS_TABLE_NAME, GPS_TABLE_COLUMNS)
 
 
 class CursorContext:
     def __init__(self, connection: sqlite3.Connection):
+        self.connection = connection
         self.cursor: sqlite3.Cursor = connection.cursor()
 
     def __enter__(self):
@@ -65,3 +104,4 @@ class CursorContext:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.cursor.close()
+        self.connection.commit()
