@@ -39,9 +39,11 @@ tracking_number = "120667023892"
 'events': [
 
 {'occurred_at': '2020-03-31T13:20:00Z', 'carrier_occurred_at': '2020-03-31T08:20:00-07:00', 'description': 'Delivered', 'city_locality': 'AUSTIN', 'state_province': 'TX', 'postal_code': '78728', 'country_code': 'US', 'company_name': None, 'signer': 'B.BARBER', 'event_code': 'DL', 'latitude': 30.1356, 'longitude': -97.6761}, 
+
 {'occurred_at': '2020-03-31T11:11:00Z', 'carrier_occurred_at': '2020-03-31T06:11:00-07:00', 'description': 'On FedEx vehicle for delivery', 'city_locality': 'AUSTIN', 'state_province': 'TX', 'postal_code': '78728', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'OD', 'latitude': 30.1356, 'longitude': -97.6761}, 
 
 {'occurred_at': '2020-03-31T11:04:00Z', 'carrier_occurred_at': '2020-03-31T06:04:00-07:00', 'description': 'At local FedEx facility', 'city_locality': 'AUSTIN', 'state_province': 'TX', 'postal_code': '78728', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'AR', 'latitude': 30.1356, 'longitude': -97.6761}, 
+
 {'occurred_at': '2020-03-31T08:52:00Z', 'carrier_occurred_at': '2020-03-31T03:52:00-07:00', 'description': 'At destination sort facility', 'city_locality': 'AUSTIN', 'state_province': 'TX', 'postal_code': '78719', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'AR', 'latitude': 30.1356, 'longitude': -97.6761}, 
 
 {'occurred_at': '2020-03-31T07:21:00Z', 'carrier_occurred_at': '2020-03-31T02:21:00-07:00', 'description': 'Departed FedEx location', 'city_locality': 'MEMPHIS', 'state_province': 'TN', 'postal_code': '38118', 'country_code': 'US', 'company_name': None, 'signer': None, 'event_code': 'DP', 'latitude': 35.0048, 'longitude': -89.937}, 
