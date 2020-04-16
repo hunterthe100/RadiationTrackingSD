@@ -17,8 +17,8 @@ class DataAccessObjectPackageTracking:
         self.log = logging.getLogger(self.__class__.__name__)
 
     def get_tracking_data(self, carrier_code: str, tracking_number: str) -> TrackingData:
-        self.log.debug("Accessing ShipEngine API")
-        self.log.debug(F"Carrier code: {carrier_code} and Tracking number: {tracking_number}")
+        self.log.debug(f"Accessing ShipEngine API "
+                       f"| Carrier code: {carrier_code} and Tracking number: {tracking_number}")
 
         url = SHIP_ENGINE_URL + TRACKING_ENDPOINT
         params = {"carrier_code": carrier_code, "tracking_number": tracking_number}

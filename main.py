@@ -2,6 +2,7 @@
 from src.dao.data_access_object_package_tracking import DataAccessObjectPackageTracking
 import logging
 
+from src.model.package_tracking.event import Event
 from src.model.package_tracking.tracking_data import TrackingData
 
 
@@ -19,9 +20,12 @@ def main():
 
     carrier_code = "fedex"
     tracking_number = "120667023892"
-    response: TrackingData = package_tracking_dao.get_tracking_data(carrier_code, tracking_number)
-    print(type(response))
-    print(str(response))
+    tracking_data: TrackingData = package_tracking_dao.get_tracking_data(carrier_code, tracking_number)
+
+    if tracking_data.is_delivered:
+        event: Event
+        for event in tracking_data.events:
+            print(event.coordinates)
 
 
 if __name__ == '__main__':
