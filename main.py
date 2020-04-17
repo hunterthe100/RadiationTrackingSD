@@ -3,6 +3,7 @@ from src.dao.data_access_object_altitude import DataAccessObjectAltitude
 from src.dao.data_access_object_package_tracking import DataAccessObjectPackageTracking
 import logging
 
+from src.dao.data_access_object_radiation import DataAccessObjectRadiation
 from src.dao.data_access_object_road_distance import DataAccessObjectRoadDistance
 
 
@@ -23,9 +24,13 @@ def main():
     rd = DataAccessObjectRoadDistance()
     # road_distance_test = rd.get_maps_distance(origin, destination)
 
-    alt = DataAccessObjectAltitude()
-    elevation_test = alt.get_altitude(origin)
-    print(elevation_test)
+    # alt = DataAccessObjectAltitude()
+    # elevation_test = alt.get_altitude(origin)
+    # print(elevation_test)
+
+    rad = DataAccessObjectRadiation()
+    radiation_test = rad.get_radiation()
+    print(radiation_test.radiation)
 
 
 if __name__ == '__main__':
