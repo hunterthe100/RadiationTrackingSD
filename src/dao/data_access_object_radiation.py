@@ -23,6 +23,8 @@ class DataAccessObjectRadiation:
 
     def get_radiation(self, enhanced_gps_point="a", time="b", particle="total"):
         self.log.debug("Accessing Google Directions API")
+
+        # TODO remove all of this when enhanced_gps_points and time format are known better
         alt = 155.1155700683594/1000
         latitude = 30.1356
         longitude = -97.6761
