@@ -1,4 +1,5 @@
 #from src.dao.data_access_object_sqlite import DataAccessObjectSQLite
+from src.dao.data_access_object_altitude import DataAccessObjectAltitude
 from src.dao.data_access_object_package_tracking import DataAccessObjectPackageTracking
 import logging
 
@@ -16,10 +17,15 @@ def main():
     # Setup Data Access Object
     # d = DataAccessObjectSQLite()
 
-    d = DataAccessObjectRoadDistance()
     origin = "30.1356,-97.6761"
     destination = "35.0048,-89.937"
-    print(d.get_maps_distance(origin, destination))
+
+    rd = DataAccessObjectRoadDistance()
+    # road_distance_test = rd.get_maps_distance(origin, destination)
+
+    alt = DataAccessObjectAltitude()
+    elevation_test = alt.get_altitude(origin)
+    print(elevation_test)
 
 
 if __name__ == '__main__':

@@ -4,6 +4,7 @@ from typing import Dict
 import requests
 
 import app_config
+from src.model.gps_tracking.road_data import RoadData
 
 GOOGLE_MAPS_API_DIRECTIONS_URL = "https://maps.googleapis.com/maps/api/directions/"
 OUTPUT_FORMAT = "json"
@@ -29,6 +30,9 @@ class DataAccessObjectRoadDistance:
         response_json: Dict = response.json()
 
         # tracking_data = TrackingData(**response_json)
-        # TODO format response_json to only relevent data namely response -> routes -> legs in road_data
+        # TODO format response_json to only relevant data namely response -> routes -> legs in road_data
+
+        RoadData(response_json)
+        print(response_json)
 
         return response_json
