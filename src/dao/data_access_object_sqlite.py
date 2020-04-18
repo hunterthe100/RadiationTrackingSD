@@ -67,6 +67,17 @@ class DataAccessObjectSQLite:
                 self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
                 raise
 
+    def _delete(self, table_name: str, id_name: str, obj_id):
+        self.log.debug(f"Deleting from {table_name} where {id_name} = {obj_id}")
+        sql_cmd = DELETE.format(table_name=table_name,
+                                id_name=id_name)
+        with CursorContext(self._connection) as cursor:
+            try:
+                cursor.execute(sql_cmd, obj_id)
+            except Exception as e:
+                self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
+                raise
+
     def save_package(self, package: Package):
         self.log.debug(f"Inserting Package with ID: {package.package_id}")
         values = (package.package_id, package.package_carrier, package.delivered, package.package_radiation)
@@ -84,21 +95,28 @@ class DataAccessObjectSQLite:
         self._save(GPS_TABLE_NAME, GPS_TABLE_COLUMNS, values)
 
     def get_package(self, package_id: str) -> Package:
-        return self._get(Package, PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS, PACKAGE_TABLE_ID_FIELD, package_id)[0]
+        # This could be made into a single SQL operation
+        package = self._get(Package, PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS, PACKAGE_TABLE_ID_FIELD, package_id)[0]
+        package.parts = self.get_parts_for_package(package.package_id)
+        package.gps_locations = self.get_gps_locations_for_package(package_id)
+        return package
 
     def get_all_packages(self) -> List[Package]:
+        self.log.warning("This is an expensive operation and you should use `get_package` instead!")
         return self._get_all(Package, PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS)
 
     def get_part(self, part_id: str) -> Part:
         return self._get(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS, PART_TABLE_ID_FIELD, part_id)[0]
 
     def get_all_parts(self) -> List[Part]:
+        self.log.warning("This is an expensive operation and you should use `get_part` instead!")
         return self._get_all(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS)
 
     def get_gps_location(self, gps_location_id: str) -> GPSLocation:
         return self._get(GPSLocation, GPS_TABLE_NAME, GPS_TABLE_COLUMNS, GPS_TABLE_ID_FIELD, gps_location_id)[0]
 
     def get_all_gps_locations(self) -> List[GPSLocation]:
+        self.log.warning("This is an expensive operation and you should use `get_gps_location` instead!")
         return self._get_all(GPSLocation, GPS_TABLE_NAME, GPS_TABLE_COLUMNS)
 
     def get_gps_locations_for_package(self, package_id: str) -> List[GPSLocation]:
