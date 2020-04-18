@@ -9,11 +9,11 @@ def config_logging():
 def main():
     dao = DataAccessObjectSQLite()
     packages = dao.get_all_packages()
-    parts = dao.get_all_parts()
-    gps = dao.get_all_gps_locations()
-    print(packages)
+    pkg = packages[0]
+    parts = dao.get_parts_for_package(pkg.package_id)
+    gps_locations = dao.get_gps_locations_for_package(pkg.package_id)
     print(parts)
-    print(gps)
+    print(gps_locations)
 
 
 if __name__ == '__main__':

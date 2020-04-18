@@ -19,7 +19,7 @@ PART_TABLE_NAME = "Parts"
 PART_TABLE_COLUMNS = "PartID, PartName, PackageID, PartRadiation"
 PART_TABLE_ID_FIELD = "PartID"
 
-SELECT_BY_ID = "SELECT {table_columns} FROM {table_name} WHERE {id_name} = ?"
+SELECT_BY = "SELECT {table_columns} FROM {table_name} WHERE {id_name} = ?"
 SELECT_ALL = "SELECT {table_columns} FROM {table_name}"
 INSERT = "INSERT INTO {table_name} ({table_columns}) VALUES ({values})"
 DELETE = "DELETE FROM {table_name} WHERE {id_name} = ?"
@@ -30,32 +30,40 @@ class DataAccessObjectSQLite:
         self.log = logging.getLogger(self.__class__.__name__)
         self._connection = sqlite3.connect(app_config.DATABASE_PATH)
 
-    def _get(self, object_class, table_name: str, table_columns: str, id_name: str, obj_id):
-        self.log.debug(f"Getting {object_class} with ID: {obj_id}")
+    def _get(self, object_class, table_name: str, table_columns: str, id_name: str, obj_id) -> List:
+        self.log.debug(f"Getting {object_class} by {id_name} = {obj_id}")
         with CursorContext(self._connection) as cursor:
-            sql_cmd = SELECT_BY_ID.format(table_name=table_name,
-                                          table_columns=table_columns,
-                                          id_name=id_name)
-            cursor.execute(sql_cmd, obj_id)
-            raw = cursor.fetchone()
-        return object_class(*raw)
+            sql_cmd = SELECT_BY.format(table_name=table_name,
+                                       table_columns=table_columns,
+                                       id_name=id_name)
+            try:
+                cursor.execute(sql_cmd, (obj_id,))
+            except Exception as e:
+                self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
+                raise
+            raw = cursor.fetchall()
+        return [object_class(*values) for values in raw]
 
-    def _get_all(self, object_class, table_name: str, table_columns: str):
+    def _get_all(self, object_class, table_name: str, table_columns: str) -> List:
         self.log.debug(f"Getting all {object_class}")
         with CursorContext(self._connection) as cursor:
             sql_cmd = SELECT_ALL.format(table_name=table_name,
                                         table_columns=table_columns)
-            cursor.execute(sql_cmd)
+            try:
+                cursor.execute(sql_cmd)
+            except Exception as e:
+                self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
+                raise
             return [object_class(*raw) for raw in cursor.fetchall()]
 
     def _save(self, table_name: str, table_columns: str, values: Tuple):
         sql_cmd = INSERT.format(table_name=table_name,
                                 table_columns=table_columns,
-                                values=", ".join(["?"]*len(values)))
+                                values=", ".join(["?"] * len(values)))
         with CursorContext(self._connection) as cursor:
             try:
                 cursor.execute(sql_cmd, values)
-            except sqlite3.OperationalError as e:
+            except Exception as e:
                 self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
                 raise
 
@@ -76,22 +84,28 @@ class DataAccessObjectSQLite:
         self._save(GPS_TABLE_NAME, GPS_TABLE_COLUMNS, values)
 
     def get_package(self, package_id: str) -> Package:
-        return self._get(Package, PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS, PACKAGE_TABLE_ID_FIELD, package_id)
+        return self._get(Package, PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS, PACKAGE_TABLE_ID_FIELD, package_id)[0]
 
     def get_all_packages(self) -> List[Package]:
         return self._get_all(Package, PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS)
 
     def get_part(self, part_id: str) -> Part:
-        return self._get(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS, PART_TABLE_ID_FIELD, part_id)
+        return self._get(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS, PART_TABLE_ID_FIELD, part_id)[0]
 
     def get_all_parts(self) -> List[Part]:
         return self._get_all(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS)
 
     def get_gps_location(self, gps_location_id: str) -> GPSLocation:
-        return self._get(GPSLocation, GPS_TABLE_NAME, GPS_TABLE_COLUMNS, GPS_TABLE_ID_FIELD, gps_location_id)
+        return self._get(GPSLocation, GPS_TABLE_NAME, GPS_TABLE_COLUMNS, GPS_TABLE_ID_FIELD, gps_location_id)[0]
 
     def get_all_gps_locations(self) -> List[GPSLocation]:
         return self._get_all(GPSLocation, GPS_TABLE_NAME, GPS_TABLE_COLUMNS)
+
+    def get_gps_locations_for_package(self, package_id: str) -> List[GPSLocation]:
+        return self._get(GPSLocation, GPS_TABLE_NAME, GPS_TABLE_COLUMNS, PACKAGE_TABLE_ID_FIELD, package_id)
+
+    def get_parts_for_package(self, package_id: str) -> List[Part]:
+        return self._get(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS, PACKAGE_TABLE_ID_FIELD, package_id)
 
 
 class CursorContext:
