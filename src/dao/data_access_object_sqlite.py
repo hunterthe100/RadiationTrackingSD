@@ -82,6 +82,11 @@ class DataAccessObjectSQLite:
         self.log.debug(f"Inserting Package with ID: {package.package_id}")
         values = (package.package_id, package.package_carrier, package.delivered, package.package_radiation)
         self._save(PACKAGE_TABLE_NAME, PACKAGE_TABLE_COLUMNS, values)
+        part: Part
+        for part in package.parts:
+            self.save_part(part)
+        for gps_location in package.gps_locations:
+            self.save_gps_location(gps_location)
 
     def save_part(self, part: Part):
         self.log.debug(f"Inserting Part with ID: {part.part_id}")

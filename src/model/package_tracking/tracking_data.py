@@ -6,6 +6,7 @@ from src.model.package_tracking.event import Event
 
 class TrackingData:
     def __init__(self,
+                 carrier_code: str,
                  tracking_number: str,
                  status_code: str,
                  status_description: str,
@@ -16,6 +17,7 @@ class TrackingData:
                  actual_delivery_date: str,
                  exception_description: str,
                  events: List[Dict]):
+        self.carrier_name: str = carrier_code
         self.tracking_number = tracking_number
         self.status_code = status_code
         self.status_description = status_description

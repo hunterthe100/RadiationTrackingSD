@@ -26,6 +26,6 @@ class DataAccessObjectPackageTracking:
         response: requests.Response = requests.get(url, headers=HEADERS, params=params)
         response_json: Dict = response.json()
 
-        tracking_data = TrackingData(**response_json)
+        tracking_data = TrackingData(carrier_code, **response_json)
 
         return tracking_data
