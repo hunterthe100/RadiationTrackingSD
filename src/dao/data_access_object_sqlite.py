@@ -32,51 +32,35 @@ class DataAccessObjectSQLite:
 
     def _get(self, object_class, table_name: str, table_columns: str, id_name: str, obj_id) -> List:
         self.log.debug(f"Getting {object_class} by {id_name} = {obj_id}")
+        sql_cmd: str = SELECT_BY.format(table_name=table_name,
+                                        table_columns=table_columns,
+                                        id_name=id_name)
         with CursorContext(self._connection) as cursor:
-            sql_cmd = SELECT_BY.format(table_name=table_name,
-                                       table_columns=table_columns,
-                                       id_name=id_name)
-            try:
-                cursor.execute(sql_cmd, (obj_id,))
-            except Exception as e:
-                self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
-                raise
+            cursor.execute(sql_cmd, (obj_id,))
             raw = cursor.fetchall()
         return [object_class(*values) for values in raw]
 
     def _get_all(self, object_class, table_name: str, table_columns: str) -> List:
         self.log.debug(f"Getting all {object_class}")
+        sql_cmd: str = SELECT_ALL.format(table_name=table_name,
+                                         table_columns=table_columns)
         with CursorContext(self._connection) as cursor:
-            sql_cmd = SELECT_ALL.format(table_name=table_name,
-                                        table_columns=table_columns)
-            try:
-                cursor.execute(sql_cmd)
-            except Exception as e:
-                self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
-                raise
+            cursor.execute(sql_cmd)
             return [object_class(*raw) for raw in cursor.fetchall()]
 
     def _save(self, table_name: str, table_columns: str, values: Tuple):
-        sql_cmd = INSERT.format(table_name=table_name,
-                                table_columns=table_columns,
-                                values=", ".join(["?"] * len(values)))
+        sql_cmd: str = INSERT.format(table_name=table_name,
+                                     table_columns=table_columns,
+                                     values=", ".join(["?"] * len(values)))
         with CursorContext(self._connection) as cursor:
-            try:
-                cursor.execute(sql_cmd, values)
-            except Exception as e:
-                self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
-                raise
+            cursor.execute(sql_cmd, values)
 
     def _delete(self, table_name: str, id_name: str, obj_id):
         self.log.debug(f"Deleting from {table_name} where {id_name} = {obj_id}")
-        sql_cmd = DELETE.format(table_name=table_name,
-                                id_name=id_name)
+        sql_cmd: str = DELETE.format(table_name=table_name,
+                                     id_name=id_name)
         with CursorContext(self._connection) as cursor:
-            try:
-                cursor.execute(sql_cmd, obj_id)
-            except Exception as e:
-                self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
-                raise
+            cursor.execute(sql_cmd, obj_id)
 
     def save_package(self, package: Package):
         self.log.debug(f"Inserting Package with ID: {package.package_id}")
@@ -133,12 +117,40 @@ class DataAccessObjectSQLite:
 
 class CursorContext:
     def __init__(self, connection: sqlite3.Connection):
+        self.log = logging.getLogger(self.__class__.__name__)
         self.connection = connection
         self.cursor: sqlite3.Cursor = connection.cursor()
 
     def __enter__(self):
-        return self.cursor
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.cursor.close()
         self.connection.commit()
+
+    # Delegate attribute lookups to cursor
+    def __getattr__(self, item):
+        return self.cursor.__getattribute__(item)
+
+    # Add exception logging to cursor execute method
+    def execute(self, sql_cmd, values: Tuple = None):
+        try:
+            if values:
+                return self.cursor.execute(sql_cmd, values)
+            else:
+                return self.cursor.execute(sql_cmd)
+        except Exception as e:
+            self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
+            raise
+
+    # Pass-through method call for IDE code completion
+    def fetchone(self):
+        return self.cursor.fetchone()
+
+    # Pass-through method call for IDE code completion
+    def fetchmany(self, size):
+        return self.cursor.fetchmany(size)
+
+    # Pass-through method call for IDE code completion
+    def fetchall(self):
+        return self.cursor.fetchall()
