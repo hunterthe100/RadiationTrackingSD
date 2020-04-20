@@ -5,6 +5,7 @@ import logging
 
 from src.dao.data_access_object_radiation import DataAccessObjectRadiation
 from src.dao.data_access_object_road_distance import DataAccessObjectRoadDistance
+from src.model.gps_tracking.enhanced_gps_point import EnhancedGPSPoint
 
 
 def config_logging():
@@ -29,7 +30,11 @@ def main():
     # print(elevation_test)
 
     rad = DataAccessObjectRadiation()
-    radiation_test = rad.get_radiation()
+    altitude = 155.1155700683594 / 1000
+    latitude = 30.1356
+    longitude = -97.6761
+    egps = EnhancedGPSPoint(longitude=longitude, latitude=latitude, altitude=altitude)
+    radiation_test = rad.get_radiation(egps)
     print(radiation_test.radiation)
 
 

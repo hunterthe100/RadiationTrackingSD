@@ -4,7 +4,7 @@ from typing import Dict
 import requests
 
 import app_config
-
+from src.model.gps_tracking.enhanced_gps_point import EnhancedGPSPoint
 
 GOOGLE_MAPS_API_DIRECTIONS_URL = "https://maps.googleapis.com/maps/api/elevation/"
 OUTPUT_FORMAT = "json"
