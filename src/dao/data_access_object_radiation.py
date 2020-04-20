@@ -42,7 +42,7 @@ class DataAccessObjectRadiation:
 
         response: requests.Response = requests.get(url)
         response_json: Dict = response.json()
-        print(response_json)
+
         radiation_data = RadiationData(response_json)
 
         return radiation_data
