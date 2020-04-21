@@ -1,10 +1,6 @@
 import logging
 
-from src.dao.data_access_object_altitude import DataAccessObjectAltitude
-from src.dao.data_access_object_package_tracking import DataAccessObjectPackageTracking
-from src.model.package import Package
-from src.model.package_tracking.tracking_data import TrackingData
-from src.package_translator import PackageTranslator
+from src.dao.data_access_object_route import DataAccessObjectRoute
 
 
 def config_logging():
@@ -12,20 +8,18 @@ def config_logging():
 
 
 def main():
+    origin = (30.1356, -97.6761)
+    destination = (35.0048, -89.937)
+
     carrier_code = "fedex"
     tracking_number = "120667023892"
 
-    package_tracking_dao = DataAccessObjectPackageTracking()
-    altitude_dao = DataAccessObjectAltitude()
-    package_translator = PackageTranslator(altitude_dao)
-
-    tracking_data: TrackingData = package_tracking_dao.get_tracking_data(carrier_code, tracking_number)
-    package: Package = package_translator.tracking_data_to_package(tracking_data)
-
-    print(package)
-    print(package.gps_locations)
-    for gps in package.gps_locations:
-        print(gps.latitude, gps.longitude, gps.altitude)
+    route_dao = DataAccessObjectRoute()
+    route = route_dao.get_route(origin, destination)
+    print(route.gps_points)
+    print(route.elevations)
+    print(route.total_distance)
+    print(route.total_duration)
 
 
 if __name__ == '__main__':

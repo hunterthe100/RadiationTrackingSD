@@ -38,7 +38,7 @@ class Event:
         return datetime.fromisoformat(self._carrier_occurred_at) if self._carrier_occurred_at else None
 
     @property
-    def gps_point(self) -> Tuple:
+    def gps_point(self) -> Tuple[float, float]:
         return GPSPoint(self.latitude, self.longitude)
 
     @property

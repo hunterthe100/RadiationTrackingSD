@@ -1,0 +1,58 @@
+import logging
+from typing import Tuple, List, Dict
+
+import requests
+
+import app_config
+
+GOOGLE_MAPS_BASE_API_URL = "https://maps.googleapis.com/maps/api/"
+GOOGLE_MAPS_ELEVATION_API_URL = GOOGLE_MAPS_BASE_API_URL + "elevation/"
+GOOGLE_MAPS_DIRECTION_API_URL = GOOGLE_MAPS_BASE_API_URL + "directions/"
+FORMAT = "json"
+PARAM_SEP = "&"
+
+
+class GoogleAPICaller:
+    def __init__(self):
+        self.log = logging.getLogger(self.__class__.__name__)
+
+    # Get route data from google API
+    def get_road_data(self, origin: Tuple[float, float], destination: Tuple[float, float]) -> Dict:
+        url = self._format_direction_request_url(origin, destination)
+        result = self._make_request(url)
+        return result
+
+    # Get GPS point data from google API
+    def get_elevations(self, gps_points: List[Tuple[float, float]]) -> Dict:
+        url = self._format_elevations_request_url(gps_points)
+        result = self._make_request(url)
+        return result
+
+    def _format_direction_request_url(self, origin: Tuple[float, float], destination: Tuple[float, float]):
+        origin_param = "origin={},{}".format(*origin)
+        destination_param = "destination={},{}".format(*destination)
+        params = self._format_params(origin_param, destination_param)
+        return self._format_api_url(GOOGLE_MAPS_DIRECTION_API_URL, params)
+
+    def _format_elevations_request_url(self, gps_points) -> str:
+        locations = "|".join(["{},{}".format(*point) for point in gps_points])
+        params = self._format_params(f"locations={locations}")
+        return GOOGLE_MAPS_ELEVATION_API_URL + FORMAT + "?" + params
+
+    def _make_request(self, url: str) -> Dict:
+        self.log.debug(f"Making request to url {url}")
+        result = requests.get(url).json()
+        status = result['status']
+        if status != "OK":
+            self.log.error(f"Request to url {url} failed! Status: {status}")
+            raise ValueError(f"Request to url {url} failed! Status: {status}")
+        return result
+
+    @staticmethod
+    def _format_api_url(base_url: str, params: str) -> str:
+        return base_url + FORMAT + "?" + params
+
+    @staticmethod
+    def _format_params(*args):
+        key = f"key={app_config.GOOGLE_MAPS_KEY}"
+        return PARAM_SEP.join(args) + PARAM_SEP + key
