@@ -1,8 +1,10 @@
-# from src.dao.data_access_object_sqlite import DataAccessObjectSQLite
-
 import logging
 
-from src.dao.data_access_object_road_distance import DataAccessObjectRoadDistance
+from src.dao.data_access_object_altitude import DataAccessObjectAltitude
+from src.dao.data_access_object_package_tracking import DataAccessObjectPackageTracking
+from src.model.package import Package
+from src.model.package_tracking.tracking_data import TrackingData
+from src.package_translator import PackageTranslator
 
 
 def config_logging():
@@ -10,33 +12,20 @@ def config_logging():
 
 
 def main():
-    # Configure Logging
-    config_logging()
+    carrier_code = "fedex"
+    tracking_number = "120667023892"
 
-    # Setup Data Access Object
-    # d = DataAccessObjectSQLite()
+    package_tracking_dao = DataAccessObjectPackageTracking()
+    altitude_dao = DataAccessObjectAltitude()
+    package_translator = PackageTranslator(altitude_dao)
 
-    origin = "30.1356,-97.6761"
-    destination = "35.0048,-89.937"
+    tracking_data: TrackingData = package_tracking_dao.get_tracking_data(carrier_code, tracking_number)
+    package: Package = package_translator.tracking_data_to_package(tracking_data)
 
-    rd = DataAccessObjectRoadDistance()
-    road_distance_test = rd.get_maps_distance(origin, destination)
-
-    print(road_distance_test)
-    print(road_distance_test.duration)
-    print(road_distance_test.distance)
-
-    # alt = DataAccessObjectAltitude()
-    # elevation_test = alt.get_altitude(origin)
-    # print(elevation_test)
-
-    # rad = DataAccessObjectRadiation()
-    # altitude = 155.1155700683594 / 1000
-    # latitude = 30.1356
-    # longitude = -97.6761
-    # egps = EnhancedGPSPoint(longitude=longitude, latitude=latitude, altitude=altitude)
-    # radiation_test = rad.get_radiation(egps)
-    # print(radiation_test.radiation)
+    print(package)
+    print(package.gps_locations)
+    for gps in package.gps_locations:
+        print(gps.latitude, gps.longitude, gps.altitude)
 
 
 if __name__ == '__main__':
