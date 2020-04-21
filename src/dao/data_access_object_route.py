@@ -14,10 +14,18 @@ class DataAccessObjectRoute:
         route_json = self.google_api_caller.get_road_data(origin, destination)
         route = Route()
         route.gps_points = self._get_gps_points(route_json)
-        route.elevations = self._get_elevation_data(route.gps_points)
+        route.elevations = self.get_elevation_for_points(route.gps_points)
         route.total_duration = self._get_total_duration_from_result(route_json)
         route.total_distance = self._get_total_distance_from_result(route_json)
         return route
+
+    def get_elevation_for_points(self, gps_points: List[Tuple[float, float]]) -> List[Tuple[float, float, float]]:
+        results = self.google_api_caller.get_elevations(gps_points)
+        elevations = []
+        for elev_data in results['results']:
+            location = elev_data["location"]
+            elevations.append(GPSPoint3D(location['lat'], location['lng'], elev_data['elevation']))
+        return elevations
 
     def _get_gps_points(self, google_route_json) -> List[Tuple[float, float]]:
         steps = self._get_steps_from_result(google_route_json)
@@ -29,14 +37,6 @@ class DataAccessObjectRoute:
                 loc = step['end_location']
             gps_points.append(GPSPoint(loc['lat'], loc['lng']))
         return gps_points
-
-    def _get_elevation_data(self, gps_points: List[Tuple[float, float]]):
-        results = self.google_api_caller.get_elevations(gps_points)
-        elevations = []
-        for elev_data in results['results']:
-            location = elev_data["location"]
-            elevations.append(GPSPoint3D(location['lat'], location['lng'], elev_data['elevation']))
-        return elevations
 
     @staticmethod
     def _get_steps_from_result(google_route_json: Dict) -> List[Dict]:
