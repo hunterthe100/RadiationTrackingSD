@@ -1,11 +1,8 @@
-#from src.dao.data_access_object_sqlite import DataAccessObjectSQLite
-from src.dao.data_access_object_altitude import DataAccessObjectAltitude
-from src.dao.data_access_object_package_tracking import DataAccessObjectPackageTracking
+# from src.dao.data_access_object_sqlite import DataAccessObjectSQLite
+
 import logging
 
-from src.dao.data_access_object_radiation import DataAccessObjectRadiation
 from src.dao.data_access_object_road_distance import DataAccessObjectRoadDistance
-from src.model.gps_tracking.enhanced_gps_point import EnhancedGPSPoint
 
 
 def config_logging():
@@ -43,4 +40,5 @@ def main():
 
 
 if __name__ == '__main__':
+    config_logging()
     main()
