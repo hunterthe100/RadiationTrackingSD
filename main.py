@@ -23,19 +23,23 @@ def main():
     destination = "35.0048,-89.937"
 
     rd = DataAccessObjectRoadDistance()
-    # road_distance_test = rd.get_maps_distance(origin, destination)
+    road_distance_test = rd.get_maps_distance(origin, destination)
+
+    print(road_distance_test)
+    print(road_distance_test.duration)
+    print(road_distance_test.distance)
 
     # alt = DataAccessObjectAltitude()
     # elevation_test = alt.get_altitude(origin)
     # print(elevation_test)
 
-    rad = DataAccessObjectRadiation()
-    altitude = 155.1155700683594 / 1000
-    latitude = 30.1356
-    longitude = -97.6761
-    egps = EnhancedGPSPoint(longitude=longitude, latitude=latitude, altitude=altitude)
-    radiation_test = rad.get_radiation(egps)
-    print(radiation_test.radiation)
+    # rad = DataAccessObjectRadiation()
+    # altitude = 155.1155700683594 / 1000
+    # latitude = 30.1356
+    # longitude = -97.6761
+    # egps = EnhancedGPSPoint(longitude=longitude, latitude=latitude, altitude=altitude)
+    # radiation_test = rad.get_radiation(egps)
+    # print(radiation_test.radiation)
 
 
 if __name__ == '__main__':

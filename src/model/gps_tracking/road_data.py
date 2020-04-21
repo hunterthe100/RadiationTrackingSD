@@ -1,22 +1,25 @@
-from collections import namedtuple
-from datetime import datetime
 from typing import Dict
+
+from src.model.gps_tracking.route import Route
 
 
 class RoadData:
     def __init__(self, google_json: Dict):
-        # TODO format response_json to only relevant data namely response -> routes -> legs
+        self.route = Route(**google_json['routes'][0])
 
-        legs = google_json['routes'][0]['legs'][0]
-        steps = legs['steps']
+    @property
+    # Returns total distance of trip in meters
+    def distance(self) -> int:
+        return sum([leg.distance['value'] for leg in self.route.legs])
 
-        # Value is given in meters
-        self.distance = legs['distance']['value']
+    @property
+    # Returns duration of trip in seconds
+    def duration(self) -> int:
+        return sum([leg.duration['value'] for leg in self.route.legs])
 
-        # Value is given in seconds
-        self.duration = legs['duration']['value']
-
-        for step in steps:
-            print(type(step))
-            print(len(step))
-            # print(step)
+    @property
+    def steps(self):
+        steps = []
+        for leg in self.route.legs:
+            steps.extend(leg.steps)
+        return steps

@@ -18,7 +18,7 @@ class DataAccessObjectRoadDistance:
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
 
-    def get_maps_distance(self, origin, destination):
+    def get_maps_distance(self, origin, destination) -> RoadData:
         self.log.debug("Accessing Google Directions API")
 
         params = SEP.join(
@@ -29,10 +29,6 @@ class DataAccessObjectRoadDistance:
         response: requests.Response = requests.get(url)
         response_json: Dict = response.json()
 
-        # tracking_data = TrackingData(**response_json)
-        # TODO format response_json to only relevant data namely response -> routes -> legs in road_data
+        road_data: RoadData = RoadData(response_json)
 
-        RoadData(response_json)
-        print(response_json)
-
-        return response_json
+        return road_data
