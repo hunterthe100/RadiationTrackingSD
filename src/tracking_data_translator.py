@@ -1,3 +1,5 @@
+from typing import List
+
 from src.dao.place_dao import PlacesDAO
 from src.dao.route_data_access_object import RouteDAO
 from src.model.gps_location import GPSPoint
@@ -18,7 +20,7 @@ class TrackingDataTranslator:
         route.elevations = self.route_dao.get_elevation_for_points(route.gps_points)
         return route
 
-    def valid_events_finder(self, tracking_data: TrackingData):
+    def valid_events_finder(self, tracking_data: TrackingData) -> List:
         valid_events = []
         for event in tracking_data.events:
             if event.latitude is not None and event.longitude is not None:
