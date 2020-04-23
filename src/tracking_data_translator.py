@@ -24,6 +24,8 @@ class TrackingDataTranslator:
                 if len(valid_events) > 1:
                     if valid_events[-1].city_locality != event.city_locality:
                         valid_events.append(event)
+                else:
+                    valid_events.append(event)
 
         route = Route()
         route.gps_points = [event.gps_point for event in valid_events]
