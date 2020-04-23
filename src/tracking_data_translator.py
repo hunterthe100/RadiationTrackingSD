@@ -18,7 +18,7 @@ class TrackingDataTranslator:
         route.elevations = self.route_dao.get_elevation_for_points(route.gps_points)
         return route
 
-    def valid_events_finder(selfself, tracking_data: TrackingData):
+    def valid_events_finder(self, tracking_data: TrackingData):
         valid_events = []
         for event in tracking_data.events:
             if event.latitude is not None and event.longitude is not None:
