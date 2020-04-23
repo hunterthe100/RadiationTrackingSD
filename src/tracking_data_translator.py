@@ -12,6 +12,13 @@ class TrackingDataTranslator:
         self.place_finder: PlacesDAO = PlacesDAO()
 
     def tracking_data_to_route(self, tracking_data: TrackingData) -> Route:
+        valid_events = self._valid_events(tracking_data)
+        route = Route()
+        route.gps_points = [event.gps_point for event in valid_events]
+        route.elevations = self.route_dao.get_elevation_for_points(route.gps_points)
+        return route
+
+    def _valid_events(selfself, tracking_data: TrackingData):
         valid_events = []
         for event in tracking_data.events:
             if event.latitude is not None and event.longitude is not None:
@@ -26,8 +33,4 @@ class TrackingDataTranslator:
                         valid_events.append(event)
                 else:
                     valid_events.append(event)
-
-        route = Route()
-        route.gps_points = [event.gps_point for event in valid_events]
-        route.elevations = self.route_dao.get_elevation_for_points(route.gps_points)
-        return route
+        return valid_events
