@@ -1,5 +1,6 @@
 import logging
 
+from src.clients.google_api_caller import GoogleAPICaller
 from src.dao.route_data_access_object import RouteDAO
 
 
@@ -22,6 +23,9 @@ def main():
     print(route.elevations)
     print(route.total_distance)
     print(route.total_duration)
+
+    google_dao = GoogleAPICaller()
+    print(google_dao.get_place("Austin, TX"))
 
 
 if __name__ == '__main__':

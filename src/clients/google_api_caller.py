@@ -8,6 +8,8 @@ import app_config
 GOOGLE_MAPS_BASE_API_URL = "https://maps.googleapis.com/maps/api/"
 GOOGLE_MAPS_ELEVATION_API_URL = GOOGLE_MAPS_BASE_API_URL + "elevation/"
 GOOGLE_MAPS_DIRECTION_API_URL = GOOGLE_MAPS_BASE_API_URL + "directions/"
+GOOGLE_MAPS_PLACE_API_URL = GOOGLE_MAPS_BASE_API_URL + "place/findplacefromtext/"
+GOOGLE_MAPS_PLACE_API_REQUEST_TYPE = "textquery"
 FORMAT = "json"
 PARAM_SEP = "&"
 
@@ -28,6 +30,11 @@ class GoogleAPICaller:
         result = self._make_request(url)
         return result
 
+    def get_place(self, place: str) -> Dict:
+        url = self._format_places_request_url(place)
+        result = self._make_request(url)
+        return result
+
     def _format_direction_request_url(self, origin: Tuple[float, float], destination: Tuple[float, float]):
         origin_param = "origin={},{}".format(*origin)
         destination_param = "destination={},{}".format(*destination)
@@ -38,6 +45,14 @@ class GoogleAPICaller:
         locations = "|".join(["{},{}".format(*point) for point in gps_points])
         params = self._format_params(f"locations={locations}")
         return GOOGLE_MAPS_ELEVATION_API_URL + FORMAT + "?" + params
+
+    def _format_places_request_url(self, place) -> str:
+        place.replace(" ", "%20")
+        place_param = "input={}".format(place)
+        input_type = "inputtype={}".format(GOOGLE_MAPS_PLACE_API_REQUEST_TYPE)
+        other_fields = "fields={}".format("geometry")
+        params = self._format_params(place_param, input_type,other_fields)
+        return GOOGLE_MAPS_PLACE_API_URL + FORMAT + "?" + params
 
     def _make_request(self, url: str) -> Dict:
         self.log.debug(f"Making request to url {url}")
