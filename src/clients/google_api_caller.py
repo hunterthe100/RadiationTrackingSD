@@ -47,7 +47,6 @@ class GoogleAPICaller:
         return GOOGLE_MAPS_ELEVATION_API_URL + FORMAT + "?" + params
 
     def _format_places_request_url(self, place) -> str:
-        place.replace(" ", "%20")
         place_param = "input={}".format(place)
         input_type = "inputtype={}".format(GOOGLE_MAPS_PLACE_API_REQUEST_TYPE)
         other_fields = "fields={}".format("geometry")
