@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, Dict, List
 
-from src.model.package_tracking.event import Event
+from src.model.package_tracking.tracking_event import TrackingEvent
 
 
 class TrackingData:
@@ -26,7 +26,7 @@ class TrackingData:
         self._ship_date = ship_date
         self._actual_delivery_date: str = actual_delivery_date
         self.exception_description = exception_description
-        self.events = [Event(**e) for e in events]
+        self.tracking_events = [TrackingEvent(**e) for e in events]
 
     @property
     def is_delivered(self) -> bool:

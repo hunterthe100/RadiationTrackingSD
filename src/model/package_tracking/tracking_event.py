@@ -4,7 +4,7 @@ from typing import Tuple, Optional
 from src.model.gps_location import GPSPoint, GPSPoint3D
 
 
-class Event:
+class TrackingEvent:
 
     def __init__(self,
                  occurred_at: str,

@@ -44,14 +44,14 @@ class GoogleAPICaller:
     def _format_elevations_request_url(self, gps_points) -> str:
         locations = "|".join(["{},{}".format(*point) for point in gps_points])
         params = self._format_params(f"locations={locations}")
-        return GOOGLE_MAPS_ELEVATION_API_URL + FORMAT + "?" + params
+        return self._format_api_url(GOOGLE_MAPS_ELEVATION_API_URL, params)
 
     def _format_places_request_url(self, place) -> str:
         place_param = "input={}".format(place)
         input_type = "inputtype={}".format(GOOGLE_MAPS_PLACE_API_REQUEST_TYPE)
         other_fields = "fields={}".format("geometry")
-        params = self._format_params(place_param, input_type,other_fields)
-        return GOOGLE_MAPS_PLACE_API_URL + FORMAT + "?" + params
+        params = self._format_params(place_param, input_type, other_fields)
+        return self._format_api_url(GOOGLE_MAPS_PLACE_API_URL, params)
 
     def _make_request(self, url: str) -> Dict:
         self.log.debug(f"Making request to url {url}")

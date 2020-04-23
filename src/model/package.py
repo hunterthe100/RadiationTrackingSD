@@ -5,13 +5,12 @@ from src.model.part import Part
 
 
 class Package:
-    def __init__(self, package_id: str,
-                 package_carrier: str,
-                 delivered: int,
-                 package_radiation: str):
-        self.package_id: str = package_id
-        self.package_carrier: str = package_carrier
-        self.delivered: bool = delivered == 1
+    def __init__(self):
+
+        self.carrier_code: str = None
+        self.tracking_number: str = None
+        self.route: List = []
+        self.
         self.package_radiation: str = package_radiation
 
         self.parts: List[Part] = []
