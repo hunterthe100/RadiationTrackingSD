@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Dict
 
 import requests
@@ -22,13 +23,11 @@ class RadiationDAO:
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
 
-    def get_radiation(self, enhanced_gps_point: EnhancedGPSPoint, time="b", particle="total"):
-        self.log.debug("Accessing Google Directions API")
-
-        # TODO remove all of this when enhanced_gps_points and time format are known better
-        year = 2019
-        month = 12
-        day = 1
+    def get_radiation(self, enhanced_gps_point: EnhancedGPSPoint, time: datetime, particle="total"):
+        self.log.debug("Accessing Amentum Radiation API")
+        year = time.year
+        month = time.month
+        day = time.day
 
         altitude = enhanced_gps_point.altitude
         latitude = enhanced_gps_point.latitude
