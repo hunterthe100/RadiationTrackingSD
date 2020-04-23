@@ -1,11 +1,11 @@
 import logging
 from typing import Dict
 
-from src.dao.ship_engine_caller import ShipEngineCaller
+from src.clients.ship_engine_caller import ShipEngineCaller
 from src.model.package_tracking.tracking_data import TrackingData
 
 
-class DataAccessObjectPackageTracking:
+class TrackingDataDAO:
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
         self.ship_engine_caller = ShipEngineCaller()

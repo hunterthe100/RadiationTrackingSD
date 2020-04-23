@@ -25,7 +25,8 @@ INSERT = "INSERT INTO {table_name} ({table_columns}) VALUES ({values})"
 DELETE = "DELETE FROM {table_name} WHERE {id_name} = ?"
 
 
-class DataAccessObjectSQLite:
+# TODO: Break this into SQLite caller + DAO
+class SQLiteDAO:
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
         self._connection = sqlite3.connect(app_config.DATABASE_PATH)

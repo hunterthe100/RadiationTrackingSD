@@ -1,11 +1,11 @@
 from typing import Tuple, List, Dict
 
-from src.dao.google_api_caller import GoogleAPICaller
+from src.clients.google_api_caller import GoogleAPICaller
 from src.model.gps_location import GPSPoint, GPSPoint3D
 from src.model.gps_tracking.route import Route
 
 
-class DataAccessObjectRoute:
+class RouteDAO:
     def __init__(self):
         self.google_api_caller: GoogleAPICaller = GoogleAPICaller()
 
@@ -40,7 +40,7 @@ class DataAccessObjectRoute:
 
     @staticmethod
     def _get_steps_from_result(google_route_json: Dict) -> List[Dict]:
-        route = DataAccessObjectRoute._get_route_from_result(google_route_json)
+        route = RouteDAO._get_route_from_result(google_route_json)
         steps = []
         for leg in route['legs']:
             steps.extend(leg['steps'])
@@ -48,12 +48,12 @@ class DataAccessObjectRoute:
 
     @staticmethod
     def _get_total_distance_from_result(google_route_json: Dict) -> int:
-        route = DataAccessObjectRoute._get_route_from_result(google_route_json)
+        route = RouteDAO._get_route_from_result(google_route_json)
         return sum([leg['distance']['value'] for leg in route['legs']])
 
     @staticmethod
     def _get_total_duration_from_result(google_route_json: Dict) -> int:
-        route = DataAccessObjectRoute._get_route_from_result(google_route_json)
+        route = RouteDAO._get_route_from_result(google_route_json)
         return sum([leg['duration']['value'] for leg in route['legs']])
 
     @staticmethod

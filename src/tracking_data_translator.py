@@ -1,4 +1,4 @@
-from src.dao.data_access_object_route import DataAccessObjectRoute
+from src.dao.route_data_access_object import RouteDAO
 from src.model.gps_tracking.route import Route
 from src.model.package_tracking.tracking_data import TrackingData
 
@@ -6,7 +6,7 @@ from src.model.package_tracking.tracking_data import TrackingData
 class TrackingDataTranslator:
     def __init__(self):
         # FIXME Better to have DAO as a singleton shared across objects than a new instance for each
-        self.route_dao: DataAccessObjectRoute = DataAccessObjectRoute()
+        self.route_dao: RouteDAO = RouteDAO()
 
     def tracking_data_to_route(self, tracking_data: TrackingData) -> Route:
         valid_events = []

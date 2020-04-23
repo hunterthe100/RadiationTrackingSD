@@ -1,6 +1,6 @@
 import logging
 
-from src.dao.data_access_object_route import DataAccessObjectRoute
+from src.dao.route_data_access_object import RouteDAO
 
 
 def config_logging():
@@ -14,9 +14,11 @@ def main():
     carrier_code = "fedex"
     tracking_number = "120667023892"
 
-    route_dao = DataAccessObjectRoute()
+    route_dao = RouteDAO()
     route = route_dao.get_route(origin, destination)
     print(route.gps_points)
+    for gps in route.gps_points:
+        print(gps)
     print(route.elevations)
     print(route.total_distance)
     print(route.total_duration)

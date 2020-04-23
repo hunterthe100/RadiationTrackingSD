@@ -18,7 +18,7 @@ PARTICLE = "particle={}"
 SEP = "&"
 
 
-class DataAccessObjectRadiation:
+class RadiationDAO:
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
 

@@ -1,6 +1,6 @@
 from src.model.gps_location import GPSLocation
 from src.model.package import Package
-from src.dao.data_access_object_sqlite import DataAccessObjectSQLite
+from src.dao.data_access_object_sqlite import SQLiteDAO
 from src.model.part import Part
 
 PACKAGES = [
@@ -48,7 +48,7 @@ GPS_LOCATIONS = [
 
 
 def insert_test_data():
-    dao = DataAccessObjectSQLite()
+    dao = SQLiteDAO()
     create_packages(dao)
     create_parts(dao)
     create_gps_locations(dao)

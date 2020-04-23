@@ -1,8 +1,8 @@
-from src.dao.data_access_object_package_tracking import DataAccessObjectPackageTracking
+from src.dao.data_access_object_package_tracking import TrackingDataDAO
 from src.model.package_tracking.event import Event
 from src.model.package_tracking.tracking_data import TrackingData
 
-package_tracking_dao = DataAccessObjectPackageTracking()
+package_tracking_dao = TrackingDataDAO()
 
 carrier_code = "fedex"
 tracking_number = "120667023892"
