@@ -21,8 +21,8 @@ class PlanePathLengthAndAltitude:
         # haversine formula
         a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
         c = 2 * asin(sqrt(a))
-        km = 6371 * c
-        return km
+        km = 6371.0 * c
+        return km*1000.0
 
     @property
     def plane_altitude(self) -> float:
