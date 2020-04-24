@@ -31,8 +31,10 @@ class RouteDAO:
         leg = Leg()
         leg.duration = time
         leg.distance = distance
-        step = Step(origin, destination, round(distance), round(time))
-        leg.steps.append(step)
+        step = Step(GPSPoint3D(*origin, PlanePathCalculator.plane_average_altitude),
+                    GPSPoint3D(*destination, PlanePathCalculator.plane_average_altitude),
+                    round(distance), round(time))
+        leg.steps = [step]
         route.legs.append(leg)
         return route
 
@@ -62,7 +64,7 @@ class PlanePathCalculator:
 
     plane_average_speed: float = 267.54  # Meters
 
-    earth_radius_km: float = 6371.0
+    earth_radius_km: float = 6371.0  # Kilometers
 
     @staticmethod
     def get_plane_distance_and_time(origin: GPSPoint, destination: GPSPoint):
