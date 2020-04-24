@@ -10,8 +10,6 @@ class Package:
         self.carrier_code: str = None
         self.tracking_number: str = None
         self.route: List = []
-        self.
-        self.package_radiation: str = package_radiation
-
+        self.package_radiation: str = None
         self.parts: List[Part] = []
         self.gps_locations: List[GPSLocation] = []
