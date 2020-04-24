@@ -1,7 +1,6 @@
-import logging
 from collections import deque
 from math import radians, sin, cos, sqrt, asin
-from typing import Tuple, List, Dict
+from typing import List, Dict
 
 from src.clients.google_api_caller import GoogleAPICaller
 from src.model.gps_location import GPSPoint, GPSPoint3D
@@ -59,7 +58,6 @@ class RouteDAO:
 
 
 class PlanePathCalculator:
-
     plane_average_altitude: float = 11600.0  # Meters
 
     plane_average_speed: float = 267.54  # Meters

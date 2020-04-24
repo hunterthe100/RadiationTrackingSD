@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 
 from src.dao.place_dao import PlacesDAO
+from src.dao.radiation_data_access_object import RadiationDAO
 from src.dao.route_data_access_object import RouteDAO
 from src.dao.tracking_data_dao import TrackingDataDAO
 from src.model.gps_location import GPSPoint
@@ -17,6 +18,7 @@ class PackageRadiationCalculator:
         self.route_dao: RouteDAO = RouteDAO()
         self.place_finder: PlacesDAO = PlacesDAO()
         self.tracking_data_dao: TrackingDataDAO = TrackingDataDAO()
+        self.radiation_dao: RadiationDAO = RadiationDAO()
 
     def get_package_radiation(self, carrier_code: str, tracking_number: str):
         tracking_data: TrackingData = self.tracking_data_dao.get_tracking_data(carrier_code, tracking_number)
@@ -29,21 +31,40 @@ class PackageRadiationCalculator:
                 last_event = current_event
                 continue
             route: Route = self.route_dao.get_route(last_event.gps_point, current_event.gps_point)
-            self._get_radiation_events(route, last_event.occurred_at, current_event.occurred_at)
+            radiation_events = self._get_radiation_events(route, last_event.occurred_at, current_event.occurred_at)
 
     def _get_radiation_events(self, route: Route, start_time: datetime, end_time: datetime) -> List[RadiationEvent]:
         radiation_events = []
         for leg in route.legs:
-            radiation_events.extend(self._get_radiation_event_for_leg(leg))
+            radiation_events.extend(self._get_radiation_event_for_leg(leg, start_time, end_time))
         return radiation_events
 
-    def _get_radiation_event_for_leg(self, leg: Leg) -> List[RadiationEvent]:
+    def _get_radiation_event_for_leg(self, leg: Leg, start_time: datetime, end_time: datetime) -> List[RadiationEvent]:
+        radiation_events = []
+        duration = end_time - start_time
         current_step: Step
+        current_time: datetime = start_time
         for current_step in leg.steps:
-            # This was a really cool event. 10/10
-            rad_event = RadiationEvent()
-            rad_event.start_location = current_step.start_location
-            rad_event.end_location = current_step.end_location
+            rad_event = self._create_radiation_event(current_step, current_time)
+            self._populate_radiation_data(rad_event)
+            radiation_events.append(rad_event)
+            # Increment current time
+            distance_ratio = leg.distance / current_step.distance
+            step_duration = distance_ratio * duration
+            current_time += step_duration
+        return radiation_events
+
+    # AKA Chernobyl
+    def _create_radiation_event(self, step: Step, time_stamp: datetime) -> RadiationEvent:
+        rad_event = RadiationEvent()
+        rad_event.start_location = step.start_location
+        rad_event.end_location = step.end_location
+        rad_event.time_stamp = time_stamp
+        return rad_event
+
+    # Add radiation data in-place to a RadiationEvent objects
+    def _populate_radiation_data(self, radiation_event: RadiationEvent):
+        radiation_event.radiation_data = self.radiation_dao.get_radiation(radiation_event.start_location, radiation_event.time_stamp)
 
     # Modify TrackingData.tracking_events in-pace to filter unnecessary events and ensure all events have GPS locations
     # TODO: Break into multiple functions. Thicc boi
