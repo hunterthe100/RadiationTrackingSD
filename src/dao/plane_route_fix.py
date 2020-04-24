@@ -3,7 +3,8 @@ from math import radians, cos, sin, asin, sqrt
 
 from src.model.gps_location import GPSPoint
 
-#TODO add route generator for plane
+
+# TODO add route generator for plane
 class PlanePathLengthAndAltitude:
     def __init__(self, origin: GPSPoint, destination: GPSPoint):
         self.log = logging.getLogger(self.__class__.__name__)

@@ -19,8 +19,10 @@ class RouteDAO:
                 self._convert_leg_gps_to_3d(leg)
             return route
         elif route_json["status"] == "ZERO_RESULTS":
-            #TODO use plane_route_fix to return route object using semi-custom json
+            # TODO use plane_route_fix to return route object using semi-custom json
             return None
+        else:
+            raise ValueError
 
     def _convert_leg_gps_to_3d(self, leg: Leg):
         gps_points = []
