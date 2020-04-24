@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 from typing import List
 
@@ -14,6 +15,7 @@ from src.model.radiation.radiation_event import RadiationEvent
 
 class PackageRadiationCalculator:
     def __init__(self):
+        self.log = logging.getLogger(self.__class__.__name__)
         # FIXME Better to have DAO as a singleton shared across objects than a new instance for each
         self.route_dao: RouteDAO = RouteDAO()
         self.place_finder: PlacesDAO = PlacesDAO()
@@ -39,9 +41,10 @@ class PackageRadiationCalculator:
     @staticmethod
     def _sum_radiaiton_events(radiation_events: List):
         radiation_sum = 0
+        radiation_event: RadiationEvent
         for radiation_event in radiation_events:
-            radiation_dose_rate = radiation_event.radiation_event.radiation_data.dose_rate
-            radiation_sum += radiation_dose_rate*radiation_event.duration
+            radiation_dose_rate = radiation_event.radiation_data.dose_rate
+            radiation_sum += radiation_dose_rate * radiation_event.duration.seconds
         return radiation_sum
 
     def _get_radiation_events(self, route: Route, start_time: datetime, end_time: datetime) -> List[RadiationEvent]:
@@ -51,8 +54,10 @@ class PackageRadiationCalculator:
         return radiation_events
 
     def _get_radiation_event_for_leg(self, leg: Leg, start_time: datetime, end_time: datetime) -> List[RadiationEvent]:
+        if leg.duration == 0:
+            return []
         radiation_events = []
-        duration = end_time - start_time
+        duration: timedelta = end_time - start_time
         current_step: Step
         current_time: datetime = start_time
         for current_step in leg.steps:
@@ -60,7 +65,7 @@ class PackageRadiationCalculator:
             self._populate_radiation_data(rad_event)
             radiation_events.append(rad_event)
             # Increment current time
-            distance_ratio = leg.distance / current_step.distance
+            distance_ratio = leg.distance / current_step.distance if current_step.distance > 0 else 0
             step_duration = distance_ratio * duration
             rad_event.duration = step_duration
             current_time += step_duration

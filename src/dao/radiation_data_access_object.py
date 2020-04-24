@@ -39,21 +39,21 @@ class RadiationAPICaller:
         month = time.month
         day = time.day
 
-        altitude = gps_point.Altitude
-        latitude = gps_point.Latitude
-        longitude = gps_point.Longitude
+        latitude, longitude, altitude = gps_point
+        altitude_km = altitude / 1000
 
-        params = self._format_params(ALTITUDE.format(altitude), LATITUDE.format(latitude), LONGITUDE.format(longitude),
+        params = self._format_params(ALTITUDE.format(altitude_km), LATITUDE.format(latitude), LONGITUDE.format(longitude),
                                      YEAR.format(year), MONTH.format(month), DAY.format(day), PARTICLE.format(particle))
 
         url = self._format_url(params)
 
+        self.log.debug(f"Calling {url}")
         response: requests.Response = requests.get(url)
         return response.json()
 
     @staticmethod
     def _format_params(*args) -> str:
-        return SEP.format(args)
+        return SEP.join(args)
 
     @staticmethod
     def _format_url(params: str):

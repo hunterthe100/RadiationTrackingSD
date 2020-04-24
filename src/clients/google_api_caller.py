@@ -56,10 +56,6 @@ class GoogleAPICaller:
     def _make_request(self, url: str) -> Dict:
         self.log.debug(f"Making request to url {url}")
         result = requests.get(url).json()
-        status = result['status']
-        if status != "OK":
-            self.log.error(f"Request to url {url} failed! Status: {status}")
-            raise ValueError(f"Request to url {url} failed! Status: {status}")
         return result
 
     @staticmethod
