@@ -72,6 +72,7 @@ class PackageRadiationCalculator:
         return radiation_events
 
     # AKA Chernobyl
+    @staticmethod
     def _create_radiation_event(self, step: Step, time_stamp: datetime) -> RadiationEvent:
         rad_event = RadiationEvent()
         rad_event.start_location = step.start_location
