@@ -1,4 +1,6 @@
+import logging
 from collections import deque
+from math import radians, sin, cos, sqrt, asin
 from typing import Tuple, List, Dict
 
 from src.clients.google_api_caller import GoogleAPICaller
@@ -11,18 +13,29 @@ class RouteDAO:
         self.google_api_caller: GoogleAPICaller = GoogleAPICaller()
 
     # Return a Route object containing 2d gps points, 3d elevation data and other route data
-    def get_route(self, origin: Tuple[float, float], destination: Tuple[float, float]) -> Route:
+    def get_route(self, origin: GPSPoint, destination: GPSPoint) -> Route:
         route_json = self.google_api_caller.get_road_data(origin, destination)
-        if route_json["status"] == "OK":
+        status = route_json["status"]
+        if status == "OK":
             route = RouteBuilder().build(route_json)
             for leg in route.legs:
                 self._convert_leg_gps_to_3d(leg)
             return route
-        elif route_json["status"] == "ZERO_RESULTS":
-            # TODO use plane_route_fix to return route object using semi-custom json
-            return None
+        elif status == "ZERO_RESULTS":
+            return self._haversine_route_generator(origin, destination)
         else:
-            raise ValueError
+            raise ValueError(f"Google returned unexpected status: {status}")
+
+    def _haversine_route_generator(self, origin: GPSPoint, destination: GPSPoint) -> Route:
+        distance, time = PlanePathCalculator.get_plane_distance_and_time(origin, destination)
+        route = Route()
+        leg = Leg()
+        leg.duration = time
+        leg.distance = distance
+        step = Step(origin, destination, round(distance), round(time))
+        leg.steps.append(step)
+        route.legs.append(leg)
+        return route
 
     def _convert_leg_gps_to_3d(self, leg: Leg):
         gps_points = []
@@ -43,6 +56,35 @@ class RouteDAO:
     @staticmethod
     def _get_route_from_result(google_route_json: Dict) -> Dict:
         return google_route_json['routes'][0]
+
+
+class PlanePathCalculator:
+
+    plane_average_altitude: float = 11600.0  # Meters
+
+    plane_average_speed: float = 267.54  # Meters
+
+    earth_radius_km: float = 6371.0
+
+    @staticmethod
+    def get_plane_distance_and_time(origin: GPSPoint, destination: GPSPoint):
+        plane_distance = PlanePathCalculator._haversine(origin, destination)
+        plane_time = plane_distance / PlanePathCalculator.plane_average_speed
+        return plane_distance, plane_time  # Meters, seconds
+
+    @staticmethod
+    def _haversine(origin: GPSPoint, destination: GPSPoint) -> float:
+        # Convert lat/lon degrees to radians
+        points = [origin.Longitude, origin.Latitude, destination.Longitude, destination.Latitude]
+        lon1, lat1, lon2, lat2 = map(radians, points)
+        # Differences
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        # haversine formula
+        a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+        c = 2 * asin(sqrt(a))
+        km = PlanePathCalculator.earth_radius_km * c
+        return km * 1000.0  # Meters
 
 
 class RouteBuilder:
