@@ -13,10 +13,14 @@ class RouteDAO:
     # Return a Route object containing 2d gps points, 3d elevation data and other route data
     def get_route(self, origin: Tuple[float, float], destination: Tuple[float, float]) -> Route:
         route_json = self.google_api_caller.get_road_data(origin, destination)
-        route = RouteBuilder().build(route_json)
-        for leg in route.legs:
-            self._convert_leg_gps_to_3d(leg)
-        return route
+        if route_json["status"] == "OK":
+            route = RouteBuilder().build(route_json)
+            for leg in route.legs:
+                self._convert_leg_gps_to_3d(leg)
+            return route
+        elif route_json["status"] == "ZERO_RESULTS":
+            #TODO use plane_route_fix to return route object using semi-custom json
+            return None
 
     def _convert_leg_gps_to_3d(self, leg: Leg):
         gps_points = []
