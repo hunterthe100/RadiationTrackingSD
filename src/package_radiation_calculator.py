@@ -26,12 +26,23 @@ class PackageRadiationCalculator:
 
         last_event: TrackingEvent = None
         current_event: TrackingEvent
+        radiation_sum = 0
         for current_event in tracking_data.tracking_events:
             if not last_event:
                 last_event = current_event
                 continue
             route: Route = self.route_dao.get_route(last_event.gps_point, current_event.gps_point)
             radiation_events = self._get_radiation_events(route, last_event.occurred_at, current_event.occurred_at)
+            radiation_sum += self._sum_radiaiton_events(radiation_events)
+        return radiation_sum
+
+    @staticmethod
+    def _sum_radiaiton_events(radiation_events: List):
+        radiation_sum = 0
+        for radiation_event in radiation_events:
+            radiation_dose_rate = radiation_event.radiation_event.radiation_data.dose_rate
+            radiation_sum += radiation_dose_rate*radiation_event.duration
+        return radiation_sum
 
     def _get_radiation_events(self, route: Route, start_time: datetime, end_time: datetime) -> List[RadiationEvent]:
         radiation_events = []
@@ -51,6 +62,7 @@ class PackageRadiationCalculator:
             # Increment current time
             distance_ratio = leg.distance / current_step.distance
             step_duration = distance_ratio * duration
+            rad_event.duration = step_duration
             current_time += step_duration
         return radiation_events
 

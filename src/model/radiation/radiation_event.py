@@ -10,3 +10,4 @@ class RadiationEvent:
         self.end_location: GPSPoint3D = None
         self.time_stamp: datetime = None
         self.radiation_data: RadiationData = None
+        self.duration = None
