@@ -4,6 +4,7 @@ from typing import Tuple, List, Dict
 import requests
 
 import app_config
+from src.model.gps_location import GPSPoint
 
 GOOGLE_MAPS_BASE_API_URL = "https://maps.googleapis.com/maps/api/"
 GOOGLE_MAPS_ELEVATION_API_URL = GOOGLE_MAPS_BASE_API_URL + "elevation/"
@@ -19,13 +20,13 @@ class GoogleAPICaller:
         self.log = logging.getLogger(self.__class__.__name__)
 
     # Get route data from google API
-    def get_road_data(self, origin: Tuple[float, float], destination: Tuple[float, float]) -> Dict:
+    def get_road_data(self, origin: GPSPoint, destination: GPSPoint) -> Dict:
         url = self._format_direction_request_url(origin, destination)
         result = self._make_request(url)
         return result
 
     # Get GPS point data from google API
-    def get_elevations(self, gps_points: List[Tuple[float, float]]) -> Dict:
+    def get_elevations(self, gps_points: List[GPSPoint]) -> Dict:
         url = self._format_elevations_request_url(gps_points)
         result = self._make_request(url)
         return result
@@ -35,7 +36,7 @@ class GoogleAPICaller:
         result = self._make_request(url)
         return result
 
-    def _format_direction_request_url(self, origin: Tuple[float, float], destination: Tuple[float, float]):
+    def _format_direction_request_url(self, origin: GPSPoint, destination: GPSPoint):
         origin_param = "origin={},{}".format(*origin)
         destination_param = "destination={},{}".format(*destination)
         params = self._format_params(origin_param, destination_param)

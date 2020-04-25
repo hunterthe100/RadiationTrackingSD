@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Tuple, Optional
+from typing import Optional
 
 from src.model.gps_location import GPSPoint, GPSPoint3D
 
@@ -38,11 +38,11 @@ class TrackingEvent:
         return datetime.fromisoformat(self._carrier_occurred_at) if self._carrier_occurred_at else None
 
     @property
-    def gps_point(self) -> Tuple[float, float]:
+    def gps_point(self) -> GPSPoint:
         return GPSPoint(self.latitude, self.longitude)
 
     @property
-    def gps_3d_point(self) -> Tuple:
+    def gps_3d_point(self) -> GPSPoint3D:
         if self.altitude is None:
             raise ValueError("Altitude must be present to construct 3D GPS point")
         return GPSPoint3D(self.latitude, self.longitude, self.altitude)

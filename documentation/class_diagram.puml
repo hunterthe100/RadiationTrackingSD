@@ -1,0 +1,111 @@
+@startuml
+
+class PackageRadiationCalculator {
+    get_package_radiation(carrier_code: str, tracking_number: str)
+}
+
+class RouteDAO {
+   get_route(origin: GPSPoint, destination: GPSPoint)
+}
+
+class PlacesDAO {
+    get_place(place: str)
+}
+
+class GoogleAPICaller {
+    get_road_data(origin: GPSPoint, destination: GPSPoint)
+    get_elevations(gps_points: List[GPSPoint])
+    get_place(place: str)
+}
+
+class Route {
+    legs: List[Leg]
+    total_distance: int
+    total_duration: int
+}
+
+class Leg {
+    steps: List[Step]
+    distance: int
+    duration: int
+}
+
+class Step {
+    start_location: GPSPoint3D
+    end_location: GPSPoint3D
+    distance: int
+    duration: int
+    gps_points: Tuple[GPSPoint3D, GPSPoint3D]
+}
+
+class TrackingDataDAO {
+    get_tracking_data(carrier_code: str, tracking_number: str)
+}
+
+class TrackingData {
+    carrier_name: str
+    tracking_number: str
+    status_code: str
+    status_description: str
+    carrier_status_code: str
+    carrier_status_description: str
+    exception_description: str
+    tracking_events: List[TrackingEvent]
+    ship_date: datetime
+    actual_delivery_date: datetime
+    is_delivered: bool
+}
+
+class TrackingEvent {
+    self.description: str
+    city_locality: str
+    state_province: str
+    postal_code: str
+    country_code: str
+    latitude: float
+    longitude: float
+    altitude: float
+    occurred_at: datetime
+    carrier_occurred_at: datetime
+    gps_point: GPSPoint
+    gps_3d_point: GPSPoint3D
+}
+
+class ShipEngineCaller {
+    get_tracking_data(carrier_code: str, tracking_number: str)
+}
+
+class RadiationDAO {
+    get_radiation(gps_point: GPSPoint3D, time: datetime, particle="total")
+}
+
+class RadiationAPICaller {
+    get_radiation_data(gps_point: GPSPoint3D, time: datetime, particle: str)
+}
+
+class GPSPoint3D {
+    latitude
+    longitude
+    altitude
+}
+
+class GPSPoint {
+    latitude
+    longitude
+}
+
+PackageRadiationCalculator -down- RouteDAO
+RouteDAO -down- GoogleAPICaller
+RouteDAO -down- Route
+Route -down- Leg
+Leg -down- Step
+PackageRadiationCalculator -down- PlacesDAO
+PlacesDAO -down- GoogleAPICaller
+PackageRadiationCalculator -down- TrackingDataDAO
+TrackingDataDAO -down- ShipEngineCaller
+TrackingDataDAO -down- TrackingData
+TrackingData -down- TrackingEvent
+PackageRadiationCalculator -down- RadiationDAO
+RadiationDAO -down- RadiationAPICaller
+
+@enduml

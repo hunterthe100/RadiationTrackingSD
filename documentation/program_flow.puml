@@ -1,0 +1,46 @@
+@startuml
+participant PackageRadiationCalculator
+participant TrackingDataDAO
+participant RouteDAO
+participant PlacesDAO
+participant RadiationDAO
+participant ShipEngineCaller
+participant GoogleAPICaller
+participant RadiationAPICaller
+
+== Fetch Tracking Data ==
+PackageRadiationCalculator -> TrackingDataDAO: Get tracking data
+activate TrackingDataDAO
+TrackingDataDAO -> ShipEngineCaller: Get tracking data
+activate ShipEngineCaller
+ShipEngineCaller -> ShipEngineCaller: Call ShipEngine
+TrackingDataDAO <- ShipEngineCaller
+deactivate ShipEngineCaller
+PackageRadiationCalculator <- TrackingDataDAO
+deactivate TrackingDataDAO
+== Fetch Route Data ==
+PackageRadiationCalculator -> RouteDAO: Get route for package events
+activate RouteDAO
+RouteDAO -> GoogleAPICaller: Get route details for package
+activate GoogleAPICaller
+GoogleAPICaller -> GoogleAPICaller: Call Google for route path
+RouteDAO <- GoogleAPICaller
+RouteDAO -> GoogleAPICaller: Get elevation data for route points
+GoogleAPICaller -> GoogleAPICaller: Call Google for elevation data
+RouteDAO <- GoogleAPICaller
+deactivate GoogleAPICaller
+PackageRadiationCalculator <- RouteDAO
+deactivate RouteDAO
+== Fetch Radiation Data ==
+PackageRadiationCalculator -> RadiationDAO: Get radiation data for package route
+activate RadiationDAO
+RadiationDAO -> RadiationAPICaller: Get radiation data for point
+activate RadiationAPICaller
+RadiationAPICaller -> RadiationAPICaller: Call radiation API
+RadiationDAO <- RadiationAPICaller
+deactivate RadiationAPICaller
+PackageRadiationCalculator <- RadiationDAO
+deactivate RadiationDAO
+PackageRadiationCalculator -> PackageRadiationCalculator: Sum radiation for package route
+
+@enduml
