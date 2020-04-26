@@ -83,6 +83,28 @@ class RadiationAPICaller {
     get_radiation_data(gps_point: GPSPoint3D, time: datetime, particle: str)
 }
 
+class PackageDAO {
+
+}
+
+class SQLiteCaller {
+
+}
+
+class Package {
+    self.package_id: str
+    carrier_code: str
+    tracking_number: str
+    package_radiation: str
+    delivered: bool
+}
+
+class Part {
+    part_id: str
+    part_name: str
+    part_radiation: str
+}
+
 class GPSPoint3D {
     latitude
     longitude
@@ -107,5 +129,9 @@ TrackingDataDAO -down- TrackingData
 TrackingData -down- TrackingEvent
 PackageRadiationCalculator -down- RadiationDAO
 RadiationDAO -down- RadiationAPICaller
+PackageDAO -down- SQLiteCaller
+PackageDAO -down- Package
+Package -down- Part
+
 
 @enduml
