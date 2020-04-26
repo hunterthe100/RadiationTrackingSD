@@ -21,6 +21,7 @@ def database_setup(connection):
     cursor = connection.cursor()
     cursor.execute(CREATE_TABLE_PACKAGES)
     cursor.execute(CREATE_TABLE_PARTS)
+    cursor.execute(CRATE_TABLE_PACKAGE_PART_MAP)
     cursor.close()
 
 

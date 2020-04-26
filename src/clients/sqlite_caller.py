@@ -15,6 +15,10 @@ class AttrMap:
     def __getitem__(self, item):
         return self.attr_map[item]
 
+    @property
+    def inverse_attr_map(self):
+        return {val: key for key, val in self.attr_map.items()}
+
 
 class PackageAttrMap(AttrMap):
     table_name = "Packages"
@@ -34,14 +38,20 @@ class PartAttrMap(AttrMap):
                 "PartRadiation": "part_radiation"}
 
 
-ATTR_MAPS = {Package: PackageAttrMap,
-             Part: PartAttrMap}
+ATTR_MAPS = {Package: PackageAttrMap(),
+             Part: PartAttrMap()}
 
 SELECT_BY = "SELECT {table_columns} FROM {table_name} WHERE {id_name} = ?"
 SELECT_ALL = "SELECT {table_columns} FROM {table_name}"
+SELECT_BY_MAPPING = "SELECT {table_columns} FROM PackagePartMap LEFT JOIN {table_name} " \
+                    "ON PackagePartMap.{id_name} == {table_name}.{id_name} " \
+                    "WHERE PackagePartMap.{lookup_field} = ?"
 UPDATE = "UPDATE {table_name} SET {set_statement} WHERE {id_name} = ?"
 INSERT = "INSERT INTO {table_name} ({table_columns}) VALUES ({values})"
 DELETE = "DELETE FROM {table_name} WHERE {id_name} = ?"
+EXISTS = "SELECT {id_name} FROM {table_name} WHERE {id_name} = ? LIMIT 1"
+CREATE_MAPPING = "INSERT INTO PackagePartMap (PackageID, PartID) VALUES (?, ?)"
+MAPPING_EXISTS = "SELECT PackageID, PartID FROM PackagePartMap WHERE PackageID = ? AND PartID = ? LIMIT 1"
 
 
 class SQLiteCaller:
@@ -50,11 +60,29 @@ class SQLiteCaller:
         self.database_path: str = database_path
         self._connection = sqlite3.connect(app_config.DATABASE_PATH)
 
+    def create_mapping(self, package: Package, part: Part):
+        with CursorContext(self._connection) as cursor:
+            cursor.execute(CREATE_MAPPING, (package.package_id, part.part_id))
+
+    def mapping_exists(self, package: Package, part: Part):
+        with CursorContext(self._connection) as cursor:
+            cursor.execute(MAPPING_EXISTS, (package.package_id, part.part_id))
+            return cursor.fetchone() is not None
+
+    def exists(self, obj) -> bool:
+        return self._exists(obj, ATTR_MAPS[type(obj)])
+
+    def _exists(self, obj, attr_map: AttrMap):
+        sql_cmd = EXISTS.format(table_name=attr_map.table_name,
+                                id_name=attr_map.id_field)
+        with CursorContext(self._connection) as cursor:
+            cursor.execute(sql_cmd, (getattr(obj, attr_map[attr_map.id_field]),))
+            return cursor.fetchone() is not None
+
     def insert(self, obj: Union[Package, Part]):
         self._insert(obj, ATTR_MAPS[type(obj)])
 
-    def _insert(self, obj, attr_map_cls: Type[AttrMap]):
-        attr_map = attr_map_cls()
+    def _insert(self, obj, attr_map):
         attrs = {attr_name: getattr(obj, attr_map[attr_name]) for attr_name in attr_map.attr_map}
         columns = []
         values = []
@@ -68,11 +96,54 @@ class SQLiteCaller:
         with CursorContext(self._connection) as cursor:
             cursor.execute(sql_cmd, tuple(values))
 
+    def select_by_mapping(self, obj_cls: Type[Union[Package, Part]], lookup_field, lookup_value):
+        attr_map = ATTR_MAPS[Part] if isinstance(obj_cls, Package) else ATTR_MAPS[Package]
+        lookup_field = attr_map.inverse_attr_map[lookup_field]
+
+        return self._select_by_mapping(obj_cls, ATTR_MAPS[obj_cls], lookup_field, lookup_value)
+
+    def _select_by_mapping(self, obj_cls, attr_map: AttrMap, lookup_field, lookup_value):
+        columns = list(attr_map.attr_map.keys())
+        sql_cmd = SELECT_BY_MAPPING.format(table_name=attr_map.table_name,
+                                           table_columns=','.join([f"{attr_map.table_name}.{col}" for col in columns]),
+                                           id_name=attr_map.id_field,
+                                           lookup_field=lookup_field)
+        with CursorContext(self._connection) as cursor:
+            cursor.execute(sql_cmd, (lookup_value,))
+            data = cursor.fetchall()
+
+        objects = []
+        for row in data:
+            obj = obj_cls()
+            for col, val in zip(columns, row):
+                setattr(obj, attr_map[col], val)
+            objects.append(obj)
+        return objects
+
+    def select_by(self, obj_cls: Type[Union[Package, Part]], field: str, value):
+        self._select_by(obj_cls, ATTR_MAPS[obj_cls], field, value)
+
+    def _select_by(self, obj_cls, attr_map, field, value):
+        columns = list(attr_map.attr_map.keys())
+        sql_cmd = SELECT_BY.format(table_name=attr_map.table_name,
+                                   table_columns=','.join(columns),
+                                   id_name=attr_map.inverse_attr_map[field])
+        with CursorContext(self._connection) as cursor:
+            cursor.execute(sql_cmd, (value,))
+            data = cursor.fetchall()
+
+        objects = []
+        for row in data:
+            obj = obj_cls()
+            for col, val in zip(columns, row):
+                setattr(obj, attr_map[col], val)
+            objects.append(obj)
+        return objects
+
     def select(self, obj_cls: Type[Union[Package, Part]], obj_id: str):
         return self._select(obj_cls, obj_id, ATTR_MAPS[obj_cls])
 
-    def _select(self, obj_cls: Type, obj_id: str, attr_map_cls: Type[AttrMap]):
-        attr_map = attr_map_cls()
+    def _select(self, obj_cls: Type, obj_id: str, attr_map):
         column_names = attr_map.attr_map.keys()
         sql_cmd = SELECT_BY.format(table_name=attr_map.table_name,
                                    table_columns=",".join(column_names),
@@ -87,12 +158,29 @@ class SQLiteCaller:
             setattr(obj, attr_map[column], val)
         return obj
 
+    def select_all(self, obj_cls: Type[Union[Package, Part]]):
+        return self._select_all(obj_cls, ATTR_MAPS[obj_cls])
+
+    def _select_all(self, obj_cls, attr_map):
+        columns = list(attr_map.attr_map.keys())
+        sql_cmd = SELECT_ALL.format(table_name=attr_map.table_name,
+                                    table_columns=','.join(columns))
+        with CursorContext(self._connection) as cursor:
+            cursor.execute(sql_cmd)
+            data = cursor.fetchall()
+
+        objects = []
+        for row in data:
+            obj = obj_cls()
+            for col, val in zip(columns, row):
+                setattr(obj, attr_map[col], val)
+            objects.append(obj)
+        return objects
+
     def update(self, obj: Union[Package, Part]):
         self._update(obj, ATTR_MAPS[type(obj)])
 
-    def _update(self, obj, attr_map_cls: Type[AttrMap]):
-        attr_map = attr_map_cls()
-
+    def _update(self, obj, attr_map):
         value_placeholders = []
         columns = []
         for column in attr_map.attr_map:
@@ -111,8 +199,7 @@ class SQLiteCaller:
     def delete(self, obj: Union[Package, Part]):
         self._delete(obj, ATTR_MAPS[type(obj)])
 
-    def _delete(self, obj, attr_map_cls: Type):
-        attr_map = attr_map_cls()
+    def _delete(self, obj, attr_map):
         sql_cmd = DELETE.format(table_name=attr_map.table_name,
                                 id_name=attr_map.id_field)
         with CursorContext(self._connection) as cursor:
