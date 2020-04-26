@@ -8,6 +8,16 @@ def config_logging():
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s | %(name)s | %(levelname)s | %(message)s")
 
 
+# TODO put logic for input into SQL database
+def input_data(input_file: str):
+    with open(input_file) as packages:
+        package_string = packages.readlines()
+
+        for thing in package_string:
+            carrier_code, tracking_number, *parts = thing.split(" ")
+            # logic to input into SQL
+
+
 def main():
 
     start = time()
