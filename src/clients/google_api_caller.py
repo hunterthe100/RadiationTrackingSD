@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple, List, Dict
+from typing import List, Dict
 
 import requests
 

@@ -3,29 +3,10 @@ import sqlite3
 from typing import List, Tuple
 
 import app_config
-from src.model.gps_location import GPSLocation
 from src.model.package import Package
 from src.model.part import Part
 
-PACKAGE_TABLE_NAME = "Packages"
-PACKAGE_TABLE_COLUMNS = "PackageID, PackageCarrier, Delivered, PackageRadiation"
-PACKAGE_TABLE_ID_FIELD = "PackageID"
 
-GPS_TABLE_NAME = "GPSLocations"
-GPS_TABLE_COLUMNS = "GPSCoordID, PackageID, Latitude, Longitude, TimeStamp"
-GPS_TABLE_ID_FIELD = "GPSCoordID"
-
-PART_TABLE_NAME = "Parts"
-PART_TABLE_COLUMNS = "PartID, PartName, PackageID, PartRadiation"
-PART_TABLE_ID_FIELD = "PartID"
-
-SELECT_BY = "SELECT {table_columns} FROM {table_name} WHERE {id_name} = ?"
-SELECT_ALL = "SELECT {table_columns} FROM {table_name}"
-INSERT = "INSERT INTO {table_name} ({table_columns}) VALUES ({values})"
-DELETE = "DELETE FROM {table_name} WHERE {id_name} = ?"
-
-
-# TODO: Break this into SQLite caller + DAO
 class SQLiteDAO:
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
@@ -116,42 +97,6 @@ class SQLiteDAO:
         return self._get(Part, PART_TABLE_NAME, PART_TABLE_COLUMNS, PACKAGE_TABLE_ID_FIELD, package_id)
 
 
-class CursorContext:
-    def __init__(self, connection: sqlite3.Connection):
-        self.log = logging.getLogger(self.__class__.__name__)
-        self.connection = connection
-        self.cursor: sqlite3.Cursor = connection.cursor()
 
-    def __enter__(self):
-        return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.cursor.close()
-        self.connection.commit()
 
-    # Delegate attribute lookups to cursor
-    def __getattr__(self, item):
-        return self.cursor.__getattribute__(item)
-
-    # Add exception logging to cursor execute method
-    def execute(self, sql_cmd, values: Tuple = None):
-        try:
-            if values:
-                return self.cursor.execute(sql_cmd, values)
-            else:
-                return self.cursor.execute(sql_cmd)
-        except Exception as e:
-            self.log.error(f"Failed to execute SQL: {sql_cmd}\nError: {e}")
-            raise
-
-    # Pass-through method call for IDE code completion
-    def fetchone(self):
-        return self.cursor.fetchone()
-
-    # Pass-through method call for IDE code completion
-    def fetchmany(self, size):
-        return self.cursor.fetchmany(size)
-
-    # Pass-through method call for IDE code completion
-    def fetchall(self):
-        return self.cursor.fetchall()

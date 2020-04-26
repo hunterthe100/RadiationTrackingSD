@@ -2,18 +2,25 @@ import sqlite3
 import app_config
 
 CREATE_TABLE_PACKAGES = "CREATE TABLE Packages " \
-                        "(PackageID TEXT, PackageCarrier TEXT, Delivered INTEGER, PackageRadiation TEXT)"
-CREATE_TABLE_PARTS = "CREATE TABLE Parts" \
-                     "(PartID TEXT, PartName TEXT, PackageID TEXT, PartRadiation REAL)"
-CREATE_TABLE_GPS = "CREATE TABLE GPSLocations" \
-                   "(GPSCoordID TEXT, PackageID TEXT, Latitude REAL, Longitude REAL, TimeStamp TEXT)"
+                        "(PackageID TEXT, " \
+                        "TrackingNumber TEXT, " \
+                        "PackageCarrier TEXT, " \
+                        "Delivered INTEGER, " \
+                        "PackageRadiation TEXT)"
+
+CREATE_TABLE_PARTS = "CREATE TABLE Parts " \
+                     "(PartID TEXT, " \
+                     "PartName TEXT, " \
+                     "PartRadiation REAL)"
+
+CRATE_TABLE_PACKAGE_PART_MAP = "CREATE TABLE PackagePartMap " \
+                               "(PackageID TEXT, PartID TEXT)"
 
 
 def database_setup(connection):
     cursor = connection.cursor()
     cursor.execute(CREATE_TABLE_PACKAGES)
     cursor.execute(CREATE_TABLE_PARTS)
-    cursor.execute(CREATE_TABLE_GPS)
     cursor.close()
 
 
