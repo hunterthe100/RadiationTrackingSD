@@ -90,8 +90,8 @@ class PackageDAO {
     create_mapping(package: Package, part: Part)
     get_parts_for_package(package: Package)
     get_packages_for_part(part: Part)
-    get_all_parts
-    def get_all_packages
+    get_all_parts()
+    get_all_packages()
 }
 
 class SQLiteCaller {
