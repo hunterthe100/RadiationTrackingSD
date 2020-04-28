@@ -84,11 +84,27 @@ class RadiationAPICaller {
 }
 
 class PackageDAO {
-
+    get_package(package_id: str) -> Package:
+    get_part(part_id: str)
+    save(obj)
+    create_mapping(package: Package, part: Part)
+    get_parts_for_package(package: Package)
+    get_packages_for_part(part: Part)
+    get_all_parts
+    def get_all_packages
 }
 
 class SQLiteCaller {
-
+    create_mapping(self, package: Package, part: Part):
+    mapping_exists(self, package: Package, part: Part):
+    exists(self, obj)
+    insert(self, obj: Union[Package, Part])
+    select_by_mapping(self, obj_cls: Type[Union[Package, Part]], lookup_field, lookup_value)
+    select_by(self, obj_cls: Type[Union[Package, Part]], field: str, value)
+    select(self, obj_cls: Type[Union[Package, Part]], obj_id: str)
+    select_all(self, obj_cls: Type[Union[Package, Part]])
+    update(self, obj: Union[Package, Part])
+    delete(self, obj: Union[Package, Part])
 }
 
 class Package {
